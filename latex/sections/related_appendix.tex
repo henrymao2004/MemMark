@@ -1,0 +1,64 @@
+% ============================================================
+% Extended related work (appendix). Lines that didn't make the
+% main paper §\ref{sec:related} because they are either:
+%   (a) easy-to-confuse but methodologically distant (RAG/corpus),
+%   (b) at a different layer (LLM text watermarking), or
+%   (c) standard cryptographic plumbing (commitments, Merkle trees).
+% ============================================================
+\section{Extended Related Work}
+\label{app:related-ext}
+
+% ============================================================
+\subsection{RAG / Corpus-Level Watermarking}
+\label{app:related-rag}
+% ============================================================
+\todo{Cite RAG-WM~\cite{ragwm}, Ward / RAG-DI~\cite{ragdi},
+Watermarked Canaries~\cite{canaries}, AQUA~\cite{aqua},
+\kgmark{}~\cite{kgmark}, Graph DB Pseudo-Nodes~\cite{graphdbwm}.
+Common pattern: protect dataset / corpus IP by injecting watermarked
+content into a static knowledge base, then detect via black-box LLM
+query.}
+
+\todo{Difference to \memmark{}: (i) target — those protect data IP
+("who stole my documents"); \memmark{} does writer attribution
+("which agent evolved this memory state"). (ii) mechanism — static
+content injection vs behavioral keyed selection on evolve decisions.
+(iii) verification — those need LLM black-box query at detection
+time; \memmark{} verifies in-record from snapshot + key
+(\S\ref{sec:rq3} R3).}
+
+\todo{Among them, \kgmark{} is the closest single-point baseline and
+appears in the main paper's experiments — see
+\S\ref{sec:related-memory}. The rest of this RAG/corpus line is
+mechanistically distinct enough that we don't carry it through
+\S\ref{sec:exp}.}
+
+% ============================================================
+\subsection{LLM Text Watermarking}
+\label{app:related-llmtext}
+% ============================================================
+\todo{Cite KGW~\cite{kgw}, SynthID-Text~\cite{synthid},
+MarkLLM~\cite{markllm}. Token-level watermarks on the final LLM
+output text. Different layer entirely: \memmark{} does not touch
+output text, only the memory backend's internal evolve decisions.}
+
+\todo{Composability — \memmark{} is orthogonal to text-layer
+watermarks. \S\ref{sec:rq6} / Appendix~\ref{app:composability}
+verifies that running both simultaneously preserves each one's
+detection ability without joint utility collapse.}
+
+% ============================================================
+\subsection{Cryptographic Provenance Primitives}
+\label{app:related-crypto}
+% ============================================================
+\todo{Commit-then-reveal commitment schemes, Merkle trees and
+transparency logs (e.g., Certificate Transparency~\cite{ct}),
+PRF-keyed nonces. All are standard cryptographic primitives.}
+
+\todo{Contribution at this layer: \memmark{}'s \S\ref{sec:method-audit}
+composes them into a memory-evolve-aware audit trace
+(per-decision commitment + per-session Merkle log + signed
+in-snapshot anchor + per-leaf inclusion proof). The novelty is
+systems-level: how these primitives are wired into a third-party
+memory SDK without modifying it, and how they collectively support
+the R1 / R2 / R3 verification hierarchy.}
