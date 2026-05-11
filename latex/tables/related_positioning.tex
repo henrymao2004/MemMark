@@ -1,0 +1,40 @@
+% ============================================================
+% Table: Related Work positioning matrix (README §10.6)
+% ============================================================
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\newcommand{\yes}{\textcolor{ForestGreen!80!black}{\checkmark}}
+\newcommand{\no}{\textcolor{red!70!black}{\ding{55}}}
+\newcommand{\partial}{$\circ$}
+\begin{tabular}{lcccccc}
+\toprule
+Dimension &
+\makecell{Agent Behavioral\\(\agentmark{}, etc.)} &
+\makecell{RAG / Corpus\\(RAG-WM, etc.)} &
+\makecell{\kgmark{}\\(KG-only)} &
+\makecell{LLM Text\\(KGW, etc.)} &
+\makecell{Memory Systems\\(\tiermem, MemOS)} &
+\textbf{\memmark} \\
+\midrule
+Behavioral (vs static)        & \yes & \no  & \yes & \no  & N/A & \yes \\
+Embedded in memory layer      & \no  & \no  & \yes & \no  & N/A & \yes \\
+In-record verifiable (no ext.\ log) & \no  & \no  & \no  & \no  & partial & \yes \\
+Robust to memory lifecycle    & \no  & partial & partial & \no  & N/A & \yes \\
+Cryptographic audit           & \no  & \no  & \no  & \no  & metadata only & \yes \\
+Backend-invariant             & N/A  & partial & \no  & N/A  & N/A & \yes \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Positioning matrix}. No prior line simultaneously
+covers behavioral $\times$ memory-layer $\times$ in-record
+verification $\times$ lifecycle robust $\times$ cryptographic audit
+$\times$ backend-invariant. \kgmark{} and \tiermem{} are the two
+closest neighbors; \memmark{} integrates the keyed-sampling stance
+of one with the provenance-aware stance of the other across three
+structurally different memory backends. \emph{partial} = supported
+only under restrictive assumptions; see \S\ref{sec:related} per-cell
+discussion.}
+\label{tab:related-positioning}
+\end{table*}

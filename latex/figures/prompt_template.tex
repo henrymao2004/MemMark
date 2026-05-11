@@ -1,0 +1,28 @@
+% ============================================================
+% Figure: AgentMark-style prompt instruction (verbatim)
+% ============================================================
+\begin{figure}[t]
+\centering
+\begin{tcbox}[colback=gray!4, colframe=black!50, fontupper=\ttfamily\scriptsize, width=0.97\linewidth, boxsep=2pt, left=2pt, right=2pt, top=2pt, bottom=2pt]
+CRITICAL OVERRIDE: instead of returning a single answer, return JSON in EXACTLY this multi-candidate form:\\[2pt]
+\{\\
+\hspace*{1em}"candidates": [\\
+\hspace*{2em}\{"decision": <answer matching the original schema>, "weight": <float>\},\\
+\hspace*{2em}\{"decision": <plausible alternative>, "weight": <float>\},\\
+\hspace*{2em}...\\
+\hspace*{1em}],\\
+\hspace*{1em}"thought": "..."\\
+\}\\[2pt]
+- Provide K candidate alternatives;\\
+- Each "decision" must independently match the original schema;\\
+- Weights $>$ 0, rank by your real preference; sum normalized.
+\end{tcbox}
+\caption{\textbf{Open-vocabulary $\to$ discrete enumeration prompt.}
+Appended verbatim to the memory SDK's original prompt.  Reduces an
+unbounded structured-JSON output to a finite candidate set
+$(\candset, \probdist)$ via the LLM's self-reported preference
+weights. Single call, $K{=}4$ default. Non-compliant return
+(weights missing / $|\candset|{<}2$) falls back to a fresh
+single-answer call that bypasses sampling and does not log an audit.}
+\label{fig:prompt-template}
+\end{figure}

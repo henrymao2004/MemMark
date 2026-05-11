@@ -1,0 +1,110 @@
+% ============================================================
+% Method — README §3, §6, §7, §8
+%   3.1 Problem formalization + carrier taxonomy (§3.2)
+%   3.2 LLM-call boundary interception (§6.1)
+%   3.3 Self-reported candidate sampling (§6.2 / §6.3)
+%   3.4 Cryptographic audit trace (§8)
+% ============================================================
+\section{Method}
+\label{sec:method}
+
+% ---------- pipeline figure ----------
+\input{figures/pipeline}
+
+% ============================================================
+\subsection{Problem Formalization and Carrier Taxonomy}
+\label{sec:method-formal}
+% ============================================================
+\todo{Define memory state $M_t$, incoming event $e_t$, evolve
+decision $\decision = \langle \carrier, \candset, \probdist, \ctx
+\rangle$ with $\carrier \in \{\text{update}, \text{link},
+\text{semantic}\}$. State the backend-invariance: \memmark{} reads
+only $(\candset, \probdist, \ctx)$, never touches backend internals.
+Match \S3.2 of the README. Include a table summarizing the three
+carriers across \amem{} / \graphiti{}.}
+
+\input{tables/carrier_taxonomy}
+
+\todo{Then list the minimum adapter signature
+($\texttt{enumerate\_candidates}$, $\texttt{score\_candidates}$,
+$\texttt{apply\_selected}$) and the per-carrier reportable quantities
+($|\candset|$, $H(\probdist)$, acceptance rate).}
+
+% ============================================================
+\subsection{LLM-Call Boundary Interception}
+\label{sec:method-interception}
+% ============================================================
+\todo{Key observation: each SDK-internal LLM call is itself an
+$\varepsilon$-equivalent decision point at $T{=}0.7$. We hot-swap
+the SDK's LLM client with a wrapper (\amem{}: replace
+\texttt{AgenticMemorySystem.llm\_controller}; \graphiti{}: replace
+\texttt{Graphiti.llm\_client}). Wrapper appends an \agentmark-style
+instruction to the SDK's prompt asking the LLM to enumerate $K$
+alternatives with self-reported weights in a single call. The wrapper
+parses, runs keyed pick via the binning sampler, returns the chosen
+decision in the SDK's expected schema. Backend doesn't know.}
+
+% prompt template figure
+\input{figures/prompt_template}
+
+% ============================================================
+\subsection{Self-Reported Candidate Sampling}
+\label{sec:method-sampler}
+% ============================================================
+\todo{Parse JSON into $(\text{decisions}, \text{weights})$, normalize
+weights to $\probdist$, feed to \agentmark's binning sampler with
+keyed context $\ctx \| \nonceT$ where $\nonceT = \text{PRF}(K,
+\ctx)$. The sampler returns the keyed pick $c^*$ and embedded bits.
+Algorithm \ref{alg:sample} sketches the per-call flow.}
+
+\input{figures/algorithm_sample}
+
+\paragraph{Properties.} \todo{State Lemma 1 (strict
+distribution preservation), Lemma 2 (composition across the cascade),
+Lemma 3 (backend-invariant marginal). Full proofs in
+Appendix~\ref{app:proofs}.}
+
+\begin{lemma}[Strict distribution preservation]
+\label{lem:dist-preserve}
+\todo{Given $\probdist$, the keyed pick $c^*$ under PRF key $K$ has
+marginal distribution equal to $\probdist$: $\Pr[c^* = c_i \mid K,
+\ctx]_{\mathrm{marg}} = \probdist(c_i)$.}
+\end{lemma}
+
+\begin{lemma}[Cascade composition]
+\label{lem:cascade}
+\todo{$K$ LLM calls within a memory event yield independent keyed
+picks. Capacity is additive in $K$, marginal bias does not
+accumulate.}
+\end{lemma}
+
+\begin{lemma}[Backend-invariant marginal]
+\label{lem:backend-invariant}
+\todo{Lemma \ref{lem:dist-preserve} depends only on $\probdist$ and
+$K$, not the backend.}
+\end{lemma}
+
+% ============================================================
+\subsection{Cryptographic Audit Trace}
+\label{sec:method-audit}
+% ============================================================
+\todo{Three-layer design: per-decision commitment, per-session
+Merkle log, signed root anchor written into the snapshot itself.
+$\commit = H(\ctx \| H(\candset) \| H(\probdist) \| \text{selected}
+\| \text{bits} \| \nonceT)$. $\header_T = (\text{agent\_id},
+\text{user\_id}, \text{session\_id}, T, \text{root}_T,
+\text{sig}_K(\text{root}_T))$.}
+
+\paragraph{Per-leaf inclusion proofs.}
+\todo{Each \texttt{AuditRecord} stores its Merkle inclusion path at
+seal time so the verifier can check each leaf independently against
+$\text{root}_T$ — no rebuilt-root match required. This gives smooth
+bit-recovery under structural attacks (pruning / dedup / poisoning),
+in contrast to rebuilt-root verification which binary-collapses when
+the leaf set changes (see Table~\ref{tab:robustness}).}
+
+\paragraph{Verification regimes.}
+\todo{Define R1 (full external log), R2 (partial external log), R3
+(snapshot only). Forward to \S\ref{sec:rq3} for the empirical
+hierarchy and to Table~\ref{tab:verification} for the regime
+matrix.}

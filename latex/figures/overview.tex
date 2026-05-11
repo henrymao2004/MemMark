@@ -1,0 +1,67 @@
+% ============================================================
+% Figure: Overview of MemMark's storyline (3-panel)
+%   panel A: provenance-as-field (attacker forges)
+%   panel B: keyed-decision behavioral trace (attacker can't forge)
+%   panel C: R3 in-record verification (snapshot-only)
+% ============================================================
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  node distance=8mm and 14mm,
+  panel/.style={draw, thick, rounded corners=2pt, minimum width=0.30\textwidth, minimum height=4.2cm, align=center, inner sep=4pt},
+  attacker/.style={fill=red!8},
+  honest/.style={fill=green!5},
+  reader/.style={fill=blue!5},
+  title/.style={font=\bfseries\small},
+]
+
+% Panel A — honest writer assumption
+\node[panel, attacker] (A) {
+  \begin{minipage}{0.28\textwidth}
+  \centering
+  \todo{\textbf{Panel A — Honest-Writer Provenance.}\\
+  Metadata fields claim authorship. Attacker who holds the
+  snapshot rewrites any field. Token-level / action-layer
+  watermarks need trajectory, which is gone.}
+  \end{minipage}
+};
+
+% Panel B — keyed behavioral trace
+\node[panel, honest, right=of A] (B) {
+  \begin{minipage}{0.28\textwidth}
+  \centering
+  \todo{\textbf{Panel B — Keyed Behavioral Trace.}\\
+  Each evolve decision $\decision$ is a non-trivial choice over
+  $\candset$. PRF key $K$ selects which one is realized via
+  binning sampler. Choice itself is what gets stored.}
+  \end{minipage}
+};
+
+% Panel C — R3 in-record verification
+\node[panel, reader, right=of B] (C) {
+  \begin{minipage}{0.28\textwidth}
+  \centering
+  \todo{\textbf{Panel C — In-Record Verification (R3).}\\
+  Per-decision commitment + per-session Merkle anchor + per-leaf
+  inclusion proof live inside the snapshot. Verifier with key
+  $K$ alone recovers payload bits.}
+  \end{minipage}
+};
+
+% Title labels above
+\node[title, above=1mm of A] {\textsc{Provenance as Field}};
+\node[title, above=1mm of B] {\textsc{Provenance as Behavior}};
+\node[title, above=1mm of C] {\textsc{Snapshot-Only Attribution}};
+
+\end{tikzpicture}
+\caption{\textbf{\memmark{} in three panels.} (A) Field-based
+provenance assumes the writer is honest; once the attacker holds
+the snapshot, all fields are writable. (B) \memmark{} embeds
+attribution into the memory system's own latent evolve decisions
+via a PRF-keyed binning sampler that preserves the marginal
+$\probdist$ distribution per Lemma~\ref{lem:dist-preserve}. (C) The
+in-record audit trace (commitment + Merkle anchor + per-leaf
+inclusion proof) lets a verifier with only the snapshot and key
+$K$ decode the writer's bits — RQ3 headline.}
+\label{fig:overview}
+\end{figure*}

@@ -1,0 +1,44 @@
+% ============================================================
+% Appendix
+% ============================================================
+
+\section{Full Proofs}
+\label{app:proofs}
+
+\subsection{Proof of Lemma~\ref{lem:dist-preserve}}
+\todo{Standard binning argument. Integer-quantize $\probdist$ into
+$N$ buckets, cyclic-shift by PRF output, return bucket containing
+shift point. Marginal over $K$ uniform PRF output equals
+$\probdist$.}
+
+\subsection{Proof of Lemma~\ref{lem:cascade}}
+\todo{PRF independence: each $\nonceT$ comes from $\text{PRF}(K,
+\ctx)$ with $\ctx$ distinct per decision. Independence of keyed
+picks follows from PRF $\to$ random oracle in standard model.}
+
+\subsection{Proof of Lemma~\ref{lem:backend-invariant}}
+\todo{Corollary of Lemma~\ref{lem:dist-preserve}: backend doesn't
+appear in the marginal expression.}
+
+\section{Composability Experiment}
+\label{app:composability}
+\todo{Three configurations (memory-only / content-only / both) on
+\S\ref{sec:rq3} R1. Report (i) memory decode rate, (ii) content
+watermark detection, (iii) joint utility. See
+Table~\ref{tab:composability}.}
+
+\input{tables/composability}
+
+\section{Hyperparameter Sensitivity}
+\label{app:hyperparam}
+\todo{Sweep $K \in \{2, 4, 8\}$, $T_{\text{enum}} \in \{0.5, 0.7,
+1.0\}$. Report bits/decision and F1 deltas.}
+
+\input{tables/hyperparam_sweep}
+
+\section{Per-Conversation Breakdown}
+\label{app:per-conv}
+\todo{All 10 \locomo{} conversations individually; appendix-only
+table.}
+
+\input{tables/per_conversation}

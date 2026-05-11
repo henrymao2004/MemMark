@@ -1,0 +1,43 @@
+% ============================================================
+% Table: Metric definitions (README §9.2)
+% ============================================================
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{0.22\linewidth}p{0.72\linewidth}}
+\toprule
+Category & Metrics \\
+\midrule
+Utility (per-benchmark)
+  & \locomo{}: F1 / BLEU-1 / ROUGE-L (\amem{}
+    \texttt{utils.py:calculate\_metrics}, set-based, no stemming).
+    \longmemeval{}: question-type accuracy, knowledge-update
+    correctness, temporal-reasoning correctness, abstention quality.
+    \mab{}: accurate retrieval (EventQA), test-time learning,
+    long-range understanding, selective forgetting
+    (FactConsolidation). \\
+Watermark
+  & bit recovery rate, decode success rate, false-positive rate
+    (FPR), wrong-key acceptance rate, per-turn / per-session
+    capacity. \\
+Capacity (memory-aware)
+  & bits per memory decision, bits per session, bits per benchmark
+    episode, bits per 100 conversation turns, average bits per
+    memory write. \\
+Carrier-level
+  & all the above reported per $\carrier \in
+    \{\text{update\_target},\text{link\_target},\text{semantic\_realization}\}$. \\
+Tamper detection
+  & commitment / Merkle proof verification fail rate
+    (per-attack, \S\ref{sec:rq4}). \\
+Memory integrity
+  & overall snapshot size, per-$\carrier$ carrier-distribution,
+    QA-time evidence-grounded retrieval recall, write\_failures. \\
+\bottomrule
+\end{tabular}
+\caption{Metric definitions across the five RQs. Numbers below
+follow these definitions exactly; F1 in particular uses
+\amem{}'s set-based formula for paper-comparability.}
+\label{tab:metric-defs}
+\end{table}

@@ -1,0 +1,26 @@
+% ============================================================
+% Algorithm: per-call keyed sample
+% ============================================================
+\begin{algorithm}[t]
+\caption{Watermarked LLM call (per-decision)}
+\label{alg:sample}
+\begin{algorithmic}[1]
+\Require Original SDK prompt $P$; backend LLM client $L$; PRF key $K$;
+target candidate count $K_{\text{cands}}{=}4$; context payload $\ctx$
+\Ensure SDK-schema-conformant string $c^*$; audit record $\reveal_t$
+\Statex
+\State $P' \gets P \,\|\, \textsc{AgentMarkInstruction}(K_{\text{cands}})$
+\State $\text{raw} \gets L.\text{complete}(P')$ \Comment{1 call, $T{=}0.7$}
+\State $(\text{decisions}, \text{weights}) \gets \textsc{ParseJSON}(\text{raw})$
+\If{$|\text{decisions}| < 2$ \textbf{or} $\text{weights missing}$}
+  \State \Return $L.\text{complete}(P)$ \Comment{passthrough, no audit}
+\EndIf
+\State $\probdist \gets \textsc{Normalize}(\text{weights})$
+\State $\nonceT \gets \text{PRF}(K, \ctx)$
+\State $c^* \gets \textsc{BinningSample}(\text{decisions}, \probdist, \nonceT)$
+\State $\commit \gets H(\ctx \| H(\candset) \| H(\probdist) \| \text{idx}(c^*) \| \text{bits} \| \nonceT)$
+\State $\textsc{MerkleLog}.\text{append}(\commit)$
+\State $\reveal_t \gets \{\candset, \probdist, c^*, \nonceT, \ctx\}$
+\State \Return $(c^*, \reveal_t)$
+\end{algorithmic}
+\end{algorithm}

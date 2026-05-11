@@ -1,0 +1,66 @@
+% ============================================================
+% Related Work — README §10
+%   §10.1 Agent behavioral watermarking (closest neighbor)
+%   §10.2 RAG / corpus-level watermarking (easy-to-confuse)
+%   §10.3 LLM text watermarking (orthogonal)
+%   §10.4 Long-term memory systems (operating environment)
+%   §10.5 Cryptographic provenance primitives (engineering)
+%   §10.6 Position summary table
+% ============================================================
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Agent behavioral watermarking.}
+\todo{Cite \agentmark{}~\cite{agentmark}, Agent Guide~\cite{agentguide},
+ActHook~\cite{acthook}, AGENTWM~\cite{agentwm}. State the
+layer-difference: all four embed at the \emph{visible action} layer
+(planning, tool call, trajectory). \memmark{} embeds at the
+\emph{state-evolution decision} layer, which survives when the
+trajectory is gone. Specifically clarify \memmark's relation to
+\agentmark: we reuse \agentmark's binning sampler as a black-box
+component inside \S\ref{sec:method-sampler}; the contribution is in
+(a) where to intercept, (b) how to construct $(\candset, \probdist)$
+from open-vocabulary SDK calls, and (c) how to compose audits across
+the cascade.}
+
+\paragraph{Memory ops as actions.}
+\todo{Cite Memory-as-Action~\cite{mem-as-action} and
+A-MAC~\cite{a-mac}. These optimize \emph{which} memory op to take;
+\memmark{} embeds attribution \emph{into} the op. Orthogonal but
+adjacent.}
+
+\paragraph{RAG / corpus-level watermarking.}
+\todo{Cite RAG-WM~\cite{ragwm}, Ward / RAG-DI~\cite{ragdi},
+Watermarked Canaries~\cite{canaries}, AQUA~\cite{aqua},
+\kgmark~\cite{kgmark}, Graph DB Pseudo-Nodes~\cite{graphdbwm}. All
+protect data IP and detect via LLM black-box query. \memmark{} does
+writer attribution and verifies via in-record sidecar. \kgmark{} is
+the closest single-point comparison and we report it as the direct
+KG-backend baseline in \S\ref{sec:setup}.}
+
+\paragraph{LLM text watermarking.}
+\todo{Cite KGW~\cite{kgw}, SynthID-Text~\cite{synthid},
+MarkLLM~\cite{markllm}. Token-level on the final output text;
+orthogonal to \memmark{}, which never touches the output. Composed
+in the §\ref{sec:rq6} appendix.}
+
+\paragraph{Long-term memory systems.}
+\todo{\amem~\cite{amem}, \graphiti~\cite{graphiti},
+MemOS~\cite{memos}, MemMachine~\cite{memmachine},
+\tiermem~\cite{tiermem}, A-MemGuard~\cite{amemguard},
+MemoryGraft~\cite{memorygraft}, Preference-Aware Memory
+Update~\cite{prefmem}, Mnemonic Sovereignty
+survey~\cite{mnemonicsovereignty}. \tiermem{} and MemOS are the
+closest \emph{metadata-style} provenance designs; we use their
+field-stamping behavior as the \texttt{signed-metadata-only}
+ablation point in \S\ref{sec:rq3}.}
+
+\paragraph{Cryptographic provenance primitives.}
+\todo{Standard commit-then-reveal, Merkle trees / transparency logs,
+PRF-keyed nonces. Cite CT~\cite{ct} and any commitment scheme paper.
+\memmark{}'s contribution here is the \emph{systems-layer
+composition}: where each primitive lives in the audit trace and
+which one supports which RQ.}
+
+% ---------- positioning table ----------
+\input{tables/related_positioning}

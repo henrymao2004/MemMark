@@ -1,0 +1,40 @@
+% ============================================================
+% Table: RQ4 robustness — 9 attacks × 3 strengths
+% Columns: bit_recovery_post / commitment_fail_rate /
+%          merkle_proof_fail_rate / missing_leaves_rate
+% ============================================================
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{ll cccc cccc cccc}
+\toprule
+& & \multicolumn{4}{c}{Strength $0.1$} & \multicolumn{4}{c}{Strength $0.3$} & \multicolumn{4}{c}{Strength $0.5$} \\
+\cmidrule(lr){3-6}\cmidrule(lr){7-10}\cmidrule(lr){11-14}
+Category & Attack & {Recov.} & {ComF} & {MerF} & {Miss} & {Recov.} & {ComF} & {MerF} & {Miss} & {Recov.} & {ComF} & {MerF} & {Miss} \\
+\midrule
+\multirow{5}{*}{Content tamper}
+  & manual\_edits        & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} \\
+  & paraphrase\_rewrite  & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} \\
+  & edge\_relabel        & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} \\
+  & subgraph\_reanchor   & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} \\
+  & supersession         & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} \\
+\midrule
+\multirow{4}{*}{Structural}
+  & compaction           & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} \\
+  & pruning              & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} \\
+  & dedup                & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} \\
+  & poisoning            & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{RQ4 — Robustness against 9 memory-specific attacks
+$\times$ 3 strengths $(0.1, 0.3, 0.5)$}. \textbf{Recov.}{=}post-attack
+\texttt{bit\_recovery\_rate}; \textbf{ComF}{=}\texttt{commitment\_fail\_rate}
+(catches content tamper); \textbf{MerF}{=}\texttt{merkle\_proof\_fail\_rate};
+\textbf{Miss}{=}\texttt{missing\_leaves\_rate} (catches structural
+removal). Content-tamper attacks light \textbf{ComF}; structural
+attacks light \textbf{Miss}. \textbf{Recov.} measures decoded bits
+over surviving leaves and stays high for content tamper because
+Method B inclusion proofs are independent per leaf.}
+\label{tab:robustness}
+\end{table*}

@@ -1,0 +1,29 @@
+% ============================================================
+% Table: 3 carriers across A-Mem / Graphiti
+% Lives in §3.1 Method.
+% ============================================================
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lll}
+\toprule
+Carrier $\carrier$ & \amem{} instance & \graphiti{} instance \\
+\midrule
+\texttt{update\_target}
+  & note id (which to update)
+  & fact-edge id / episode \\
+\texttt{link\_target}
+  & keyword cluster / tag
+  & entity attach point \\
+\texttt{semantic\_realization}
+  & note description + tags
+  & edge label / fact phrasing \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Three carriers, two backends}. Each $\carrier$ is a
+non-trivial-candidate-set evolve decision realized in
+backend-specific form; the watermark sampler reads only
+$(\candset, \probdist, \ctx)$ and is therefore backend-invariant.}
+\label{tab:carrier-taxonomy}
+\end{table}

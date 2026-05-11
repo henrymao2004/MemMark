@@ -1,0 +1,60 @@
+% ============================================================
+% Figure: End-to-end MemMark pipeline (data flow diagram)
+% ============================================================
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  node distance=6mm and 10mm,
+  block/.style={draw, thick, rounded corners=2pt, minimum height=8mm, minimum width=22mm, align=center, font=\small, inner sep=3pt},
+  sdk/.style={block, fill=blue!8},
+  wrapper/.style={block, fill=orange!12},
+  sampler/.style={block, fill=green!10},
+  store/.style={block, fill=gray!10},
+  audit/.style={block, fill=purple!8},
+  flow/.style={-{Latex[length=1.4mm,width=1.2mm]}, thick},
+  flowdash/.style={-{Latex[length=1.4mm,width=1.2mm]}, thick, dashed},
+]
+
+% Top row: ingestion path
+\node[sdk] (event) {Conversation\\turn $e_t$};
+\node[sdk, right=of event] (backend) {Memory SDK\\(\amem{} / \graphiti{})};
+\node[wrapper, right=of backend] (wrap) {LLM-call\\wrapper};
+\node[wrapper, right=of wrap] (enum) {Self-reported\\enumeration};
+\node[sampler, right=of enum] (samp) {Binning\\sampler $\nonceT$};
+\node[audit, below=10mm of samp] (commit) {Commitment\\$\commit$};
+\node[audit, left=of commit] (merkle) {Per-session\\Merkle log};
+\node[audit, left=of merkle] (anchor) {Signed anchor\\$\header_T$};
+
+% Storage
+\node[store, below=10mm of backend] (store) {Memory snapshot\\+ in-record sidecar};
+
+% Top-row flow
+\draw[flow] (event) -- (backend);
+\draw[flow] (backend) -- node[above,font=\scriptsize]{prompt} (wrap);
+\draw[flow] (wrap) -- node[above,font=\scriptsize]{+ instr.} (enum);
+\draw[flow] (enum) -- node[above,font=\scriptsize]{$(\candset, \probdist)$} (samp);
+\draw[flow] (samp.west) to[bend left=25] node[above,font=\scriptsize]{$c^*$} (wrap.east);
+
+% Audit flow
+\draw[flow] (samp) -- (commit);
+\draw[flow] (commit) -- (merkle);
+\draw[flow] (merkle) -- (anchor);
+
+% Persistence
+\draw[flowdash] (backend) -- (store);
+\draw[flowdash] (commit) to[bend right=15] node[right,font=\scriptsize]{$\reveal_t$} (store);
+\draw[flowdash] (anchor) to[bend left=15] node[below,font=\scriptsize]{$\header_T$} (store);
+
+\end{tikzpicture}
+\caption{\textbf{End-to-end \memmark{} pipeline.} The memory SDK
+issues an internal LLM call (blue). Our wrapper (orange) appends an
+\agentmark-style enumeration instruction; the LLM self-reports
+$K$ alternatives with weights $(\candset, \probdist)$. The binning
+sampler (green) keyed-picks $c^*$ via $\nonceT = \text{PRF}(K,
+\ctx)$. Each pick produces a commitment, gets appended to the
+per-session Merkle log, and contributes to the signed anchor
+$\header_T$ (purple). At seal time the anchor and the reveal record
+land directly inside the memory snapshot, enabling R3 in-record
+verification without any external audit store.}
+\label{fig:pipeline}
+\end{figure*}

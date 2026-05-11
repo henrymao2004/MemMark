@@ -1,0 +1,35 @@
+% ============================================================
+% Discussion / Limitations
+% ============================================================
+\section{Discussion}
+\label{sec:discuss}
+
+\paragraph{Why state-evolution, not action.}
+\todo{Summarize the trajectory-vs-state argument from \S\ref{sec:intro}
+plus the empirical R3 vs Action-layer comparison from
+\S\ref{sec:rq3}.}
+
+\paragraph{What the distribution-preservation guarantee buys.}
+\todo{Lemma \ref{lem:dist-preserve} is a per-decision marginal
+guarantee. We do \emph{not} claim end-to-end answer-distribution
+preservation across the full QA pipeline — \S\ref{sec:rq1} shows
+watermark answers are on average $\sim$37\% longer than no-watermark
+answers, an indirect effect of keyword/tag choices propagating
+through retrieval. State the scope honestly.}
+
+\paragraph{Limitations.}
+\todo{(i) Backend coverage limited to \amem{} / \graphiti{};
+extending to MemOS / MemMachine is engineering. (ii) Adversary that
+can both write the snapshot \emph{and} read the secret key trivially
+forges; we assume the key is not exfiltrated. (iii) cat-5
+adversarial questions remain hard; F1 lifted to $\approx 0.4$ after
+the loader fix but still below paper-level for some backends. (iv)
+\texttt{contradiction\_rate} / merge / delete / stale-memory / temporal
+consistency need \longmemeval{} ground-truth labels and are not
+reported in this draft.}
+
+\paragraph{Future work.}
+\todo{(i) Larger $K$ — current self-reported enumeration is $K=4$;
+$K{=}8$ doubles per-decision capacity but cost / quality trade-off
+needs study. (ii) Online attestation for streaming agents.
+(iii) Cross-session anchor chaining for long-running deployments.}

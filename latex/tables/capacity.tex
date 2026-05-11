@@ -1,0 +1,32 @@
+% ============================================================
+% Table: RQ2 capacity per carrier
+% ============================================================
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llS[table-format=1.3]S[table-format=1.3]S[table-format=2.0]S[table-format=1.4]}
+\toprule
+Backend & Carrier & {Avg $|\candset|$} & {Avg $H(\probdist)$} & {Decisions} & {bits/dec} \\
+\midrule
+\multirow{3}{*}{\amem{}}
+  & \texttt{update\_target}        & \todo{} & \todo{} & \todo{} & \todo{} \\
+  & \texttt{link\_target}          & \todo{} & \todo{} & \todo{} & \todo{} \\
+  & \texttt{semantic\_realization} & \todo{} & \todo{} & \todo{} & \todo{} \\
+\midrule
+\multirow{3}{*}{\graphiti{}}
+  & \texttt{update\_target}        & \todo{} & \todo{} & \todo{} & \todo{} \\
+  & \texttt{link\_target}          & \todo{} & \todo{} & \todo{} & \todo{} \\
+  & \texttt{semantic\_realization} & \todo{} & \todo{} & \todo{} & \todo{} \\
+\midrule
+\multicolumn{2}{l}{\textbf{Overall (per 100 turns)}}
+  & \multicolumn{4}{c}{\todo{bits per 100 turns}} \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{RQ2 — Per-carrier capacity}. Average candidate set
+size and entropy of the LLM self-reported distribution, total
+decisions, and realized bits per decision. Non-trivial
+$H(\probdist) > 0$ rules out the reviewer attack ``prompted
+enumeration does not constitute intrinsic decision freedom''.}
+\label{tab:capacity}
+\end{table}

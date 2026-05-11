@@ -1,0 +1,36 @@
+% ============================================================
+% Table: RQ3 verification regime hierarchy
+% ============================================================
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llcccccc}
+\toprule
+Regime & Method & Bit Recov. & Decode Succ. & FPR & Wrong-Key Acc. & Root Match & Sig Valid \\
+\midrule
+\multirow{3}{*}{\textbf{R1 — Full External Log}}
+  & \memmark{}                    & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\
+  & \texttt{signed-metadata-only} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\
+  & Action-layer @ ToolBench      & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\
+\midrule
+\multirow{3}{*}{\textbf{R2 — Partial Log $r{=}0.5$}}
+  & \memmark{}                    & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\
+  & \texttt{signed-metadata-only} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\
+  & Action-layer @ ToolBench      & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\
+\midrule
+\multirow{3}{*}{\textbf{R3 — Snapshot Only (Headline)}}
+  & \memmark{}                    & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\
+  & \texttt{signed-metadata-only} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\
+  & Action-layer @ ToolBench      & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{RQ3 — Verification regime hierarchy}. R1 (full
+external log), R2 (partial external log, here $r{=}0.5$, full sweep
+in Figure~\ref{fig:r2-curve}), R3 (snapshot only — headline).
+Wrong-key acceptance reports the rate at which a verifier with the
+wrong key still recovers payload bits; expected $\approx 1/K$ for a
+sound construction. Action-layer baseline drops to 0 in R3 because
+the trajectory is gone.}
+\label{tab:verification}
+\end{table*}

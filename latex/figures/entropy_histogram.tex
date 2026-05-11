@@ -1,0 +1,17 @@
+% ============================================================
+% Figure: Per-carrier entropy distribution (RQ2)
+% ============================================================
+\begin{figure}[t]
+\centering
+\fbox{\parbox{0.95\linewidth}{\centering\todo{Three histograms (one per
+$\carrier$) of $H(\probdist)$ across all decisions. Mean entropy
+$\approx$ 1.07 (close to $\log_2 K{=}2$ ceiling at K=4). Show that
+$<5\%$ of decisions have $H(\probdist) < 0.2$, i.e. the LLM rarely
+collapses to a single confident option.}\\[6pt] \vspace{4cm}}}
+\caption{\textbf{Per-carrier entropy of LLM self-reported weights}.
+Non-degenerate distributions ($H \gg 0$) on every carrier rule out
+the ``prompted enumeration $\neq$ intrinsic freedom'' attack: even
+when the SDK could give a confident single answer, our prompt
+elicits genuinely competing alternatives.}
+\label{fig:entropy-hist}
+\end{figure}

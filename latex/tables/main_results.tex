@@ -1,0 +1,40 @@
+% ============================================================
+% Table: Main RQ1 utility results
+%   columns: per category F1 / BLEU-1 / ROUGE-L + overall
+%   rows: 4 baselines × 2 backends × 2 LLMs
+% Numbers paper-comparable to A-mem Table 1 (set-based F1).
+% ============================================================
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llcccccccccccc}
+\toprule
+& & \multicolumn{2}{c}{Single Hop (1)} & \multicolumn{2}{c}{Temporal (2)} & \multicolumn{2}{c}{Multi Hop (3)} & \multicolumn{2}{c}{Open Domain (4)} & \multicolumn{2}{c}{Adversarial (5)} & \multicolumn{2}{c}{\textbf{Overall}} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}\cmidrule(lr){9-10}\cmidrule(lr){11-12}\cmidrule(lr){13-14}
+Backend & Method & F1 & BLEU & F1 & BLEU & F1 & BLEU & F1 & BLEU & F1 & BLEU & F1 & BLEU \\
+\midrule
+\multirow{4}{*}{\amem{}}
+  & \texttt{no-watermark}        & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} \\
+  & \texttt{random-replace}      & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} \\
+  & \texttt{signed-metadata-only}& \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} \\
+  & \textbf{\memmark}            & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} \\
+\midrule
+\multirow{5}{*}{\graphiti{}}
+  & \texttt{no-watermark}        & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} \\
+  & \texttt{random-replace}      & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} \\
+  & \texttt{signed-metadata-only}& \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} \\
+  & \kgmark{}                    & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} \\
+  & \textbf{\memmark}            & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{RQ1 — Utility preservation on \locomo}. Per-category F1 / BLEU-1
+under \amem{} and \graphiti{} backends. Metric formula follows
+\amem{} \texttt{utils.py:135--145} (set-based, no stemming) for
+direct paper-comparability. ROUGE-L omitted from this main table
+for space; see Appendix~\ref{app:per-conv}. \memmark{} should fall
+within statistical noise of \texttt{no-watermark}; the gap to
+\texttt{signed-metadata-only} measures the marginal value of keyed
+embedding.}
+\label{tab:main-results}
+\end{table*}

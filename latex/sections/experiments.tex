@@ -1,0 +1,133 @@
+% ============================================================
+% Experiments — README §9
+%   §9.1 Setup
+%   §9.2 Metrics (no body, just pointer to table)
+%   §9.3 RQ1 Utility
+%   §9.4 RQ2 Capacity
+%   §9.5 RQ3 In-Record / Snapshot-Only Verification (HEADLINE)
+%   §9.6 RQ4 Robustness
+%   §9.7 RQ5 Integrity
+%   §9.8 RQ6 Composability (appendix-only)
+% ============================================================
+\section{Experiments}
+\label{sec:exp}
+
+% ============================================================
+\subsection{Setup}
+\label{sec:setup}
+% ============================================================
+\todo{Backends: \amem{} (agentic notes) and \graphiti{} (temporal
+graph). Each via \S\ref{sec:method-formal}'s minimal adapter, no
+agent harness. LLMs: \textsc{DeepSeek v4 Pro} (headline + cost) and
+\textsc{Qwen3.5-397B-A17B} (open weights + reproducibility), both
+OpenAI-compatible, $T_{\text{enum}}{=}0.7$, $T_{\text{score}}{=}0.0$,
+JSON mode on. Benchmarks: \locomo{} / \longmemeval{} / \mab{}. F1
+follows \amem{} \texttt{utils.py:135--145} set-based formula for
+paper-comparability to \amem{} Table 1. $\geq 3$ seeds per
+(backend, LLM, benchmark) triple.}
+
+\paragraph{Baselines.} \todo{(1) \texttt{no-watermark} — upper
+utility bound. (2) \texttt{random-replace} — FPR / wrong-key floor.
+(3) \texttt{signed-metadata-only} — same audit trace, no keyed bit
+embedding; isolates marginal value of watermark over pure metadata
+in R3. (4) \kgmark{} @ \graphiti{} — direct KG baseline (N/A on
+\amem). (5) Action-layer watermark @ ToolBench — cross-layer R1/R2/R3
+comparison.}
+
+% Metric definitions table
+\input{tables/metric_definitions}
+
+% ============================================================
+\subsection{RQ1 — Utility Preservation}
+\label{sec:rq1}
+% ============================================================
+\todo{Question: does watermark embedding break memory system
+utility? Setup: \texttt{no-watermark} vs \texttt{+ watermark} on F1
+/ BLEU-1 / ROUGE-L (set-based). Result: $\Delta$F1 within statistical
+noise across all (LLM, backend, benchmark) triples; retrieve /
+generation latency increase $\leq 5\%$; no extra write failures.
+Lead with Table~\ref{tab:main-results}, point at
+Figure~\ref{fig:per-category} for per-category breakdown.}
+
+\input{tables/main_results}
+\input{figures/per_category}
+
+% ============================================================
+\subsection{RQ2 — Capacity}
+\label{sec:rq2}
+% ============================================================
+\todo{Question: how many bits can the memory evolve decisions carry?
+Report (i) avg $|\candset|$ and $H(\probdist)$ per carrier
+(theoretical upper bound), (ii) bits per decision / session /
+episode (actual), (iii) bits per 100 conversation turns. Addresses
+the reviewer attack ``prompted enumeration $\neq$ intrinsic decision
+freedom'' by showing per-backend $H(\probdist)$ distributions are
+non-trivially above zero.}
+
+\input{tables/capacity}
+\input{figures/entropy_histogram}
+
+% ============================================================
+\subsection{RQ3 — Snapshot-Only / Partial-Log Verification (Headline)}
+\label{sec:rq3}
+% ============================================================
+\paragraph{Motivation.} \todo{In the most forensically valuable
+case — memory leaked, distilled, or migrated — the action trace is
+gone. RQ1 / RQ2 give ``watermark works at runtime''; this section
+gives ``watermark works after the trajectory is gone''. Direct point
+of differentiation from action-layer watermarks.}
+
+\paragraph{Regimes.} \todo{R1 = full external log (audit upper
+bound). R2 = partial log with keep ratio $r \in \{0.1, 0.3, 0.5,
+0.7, 0.9\}$. R3 = snapshot only with the in-record reveal sidecar.}
+
+\input{tables/verification}
+
+\paragraph{Headline result.} \todo{R3 \texttt{bit\_recovery} reaches
+$\approx 1.0$ with \texttt{anchor\_signature\_valid}; wrong-key
+control drops to $\approx 1/K$ (random); the
+\texttt{signed-metadata-only} ablation drops to 0. R2 degrades
+smoothly with $r$ — see Figure~\ref{fig:r2-curve}.}
+
+\input{figures/r2_curve}
+
+% ============================================================
+\subsection{RQ4 — Robustness Against Memory-Specific Attacks}
+\label{sec:rq4}
+% ============================================================
+\todo{Nine attacks $\times$ three strengths $(0.1, 0.3, 0.5)$ over
+the watermarked snapshot. Report pre / post bit-recovery,
+commitment-fail rate, Merkle-proof-fail rate, missing-leaves rate.}
+
+\input{tables/robustness}
+
+\paragraph{Smooth vs binary signal split.} \todo{Content-tamper
+attacks (manual\_edits, paraphrase\_rewrite, edge\_relabel,
+subgraph\_reanchor, supersession) trigger
+\texttt{commitment\_fail\_rate} proportional to strength. Structural
+attacks (pruning, dedup, poisoning, compaction) trigger
+\texttt{missing\_leaves\_rate} since the leaf set itself changes
+size — see Figure~\ref{fig:attack-signal-split}.}
+
+\input{figures/attack_signals}
+
+% ============================================================
+\subsection{RQ5 — Memory Integrity}
+\label{sec:rq5}
+% ============================================================
+\todo{Question: does watermark introduce dirty memory? Report only
+metrics that are computable end-to-end on \locomo{}: overall
+snapshot size, per-$\carrier$ carrier-distribution, QA-time
+evidence-grounded retrieval recall, write\_failures. No ground-truth
+labels in \locomo{} for update / link / merge correctness, so we
+don't claim those.}
+
+\input{tables/integrity}
+
+% ============================================================
+\subsection{RQ6 — Composability with Content Watermark (Appendix)}
+\label{sec:rq6}
+% ============================================================
+\todo{Brief note: three configurations (memory-only / content-only /
+both) on the R1 protocol of \S\ref{sec:rq3}. Detail in
+Appendix~\ref{app:composability}.}

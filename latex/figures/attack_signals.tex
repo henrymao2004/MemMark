@@ -1,0 +1,23 @@
+% ============================================================
+% Figure: Attack signal split (RQ4)
+% ============================================================
+\begin{figure*}[t]
+\centering
+\fbox{\parbox{0.95\textwidth}{\centering\todo{Two stacked sub-plots:
+(a) commitment\_fail\_rate vs strength for 5 content-tamper
+attacks, all rise linearly with strength. (b)
+missing\_leaves\_rate vs strength for 4 structural attacks, also
+linear. Together they show \memmark{} detects \emph{which}
+audit layer caught \emph{which} attack — content vs structural —
+a single conflated ``tamper detection rate'' would lose this.}
+\\[6pt] \vspace{5cm}}}
+\caption{\textbf{Attack signal split — content vs structural
+tamper}. Content-tamper attacks (manual\_edits, paraphrase\_rewrite,
+edge\_relabel, subgraph\_reanchor, supersession) trigger
+\texttt{commitment\_fail\_rate} since leaf bytes change in place.
+Structural attacks (pruning, dedup, poisoning, compaction) trigger
+\texttt{missing\_leaves\_rate} since the leaf set changes size.
+Reporting both lets reviewers see exactly which audit layer caught
+which attack.}
+\label{fig:attack-signal-split}
+\end{figure*}

@@ -1,0 +1,19 @@
+% ============================================================
+% Figure: R2 bit-recovery vs keep ratio (RQ3)
+% ============================================================
+\begin{figure}[t]
+\centering
+\fbox{\parbox{0.95\linewidth}{\centering\todo{Line plot: x-axis keep
+ratio $r \in [0.1, 0.9]$, y-axis bit\_recovery\_rate. Two lines:
+\memmark{} (rises monotonically from $\approx 0.05$ to $\approx
+0.95$) and \texttt{signed-metadata-only} (flat at 0). Highlight the
+$r{=}0$ R3 result as a star marker at $\sim$1.0 since R3 doesn't
+need external log entries.}\\[6pt] \vspace{4cm}}}
+\caption{\textbf{R2 — Bit recovery degrades smoothly with external
+log retention $r$}. \memmark{} climbs monotonically with $r$;
+\texttt{signed-metadata-only} stays at zero because it embeds no
+keyed bits. The $r{=}0$ point on the right corresponds to R3
+(snapshot-only), where \memmark{} recovers $\approx 1.0$ — the
+headline.}
+\label{fig:r2-curve}
+\end{figure}
