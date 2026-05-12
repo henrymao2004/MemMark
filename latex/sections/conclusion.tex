@@ -1,16 +1,15 @@
 % ============================================================
-% Conclusion — attribution-first, trade-off honest.
+% Conclusion — three pillars: utility preserved, R3, watermark.
 % ============================================================
 \section{Conclusion}
 \label{sec:conclusion}
 
-\todo{\memmark{} delivers a capability no prior watermark or
-provenance scheme provides: \textbf{snapshot-only writer
-attribution} (R3 bit\_recovery = $1.00$) under the
-adversarial-storage threat model, where field-stamping provenance
-is forgeable and trajectory-bound watermarks have no signal left to
-read. The price is a controlled $\sim$7\% relative F1 trade-off
-(Table~\ref{tab:tradeoff}), in line with text-layer watermarks and
-strictly preferable to the $0$ attribution rate of every
-alternative in the forensic setting. Code, audit traces, and the
-nine-attack benchmark are released.}
+\todo{\memmark{} is a watermark for long-term agent memory
+systems that embeds attribution into the memory backend's own
+latent evolve decisions. Across \amem{} and \graphiti{} on
+\locomo{} we report three findings: utility is preserved within
+statistical noise of the unwatermarked baseline (RQ1); snapshot-only
+attribution succeeds at bit\_recovery $= 1.00$ versus $0$ for a
+signed-metadata baseline (RQ3, headline); the watermark stays
+robust under nine memory-lifecycle attacks (RQ4). Code, audit
+traces, and benchmarks are released.}

@@ -1,23 +1,19 @@
 % ============================================================
-% Experiments — attribution-first ordering.
+% Experiments — three-pillar story.
 %
-% Old order (skeleton v1): RQ1 → RQ2 → RQ3 → RQ4 → RQ5 (utility first,
-%                          standard "watermark paper" template).
-%
-% New order (this version): RQ3 → RQ4 → RQ2 → RQ1 → RQ5.
+% Order: RQ1 → RQ2 → RQ3 → RQ4 → RQ5
 %   §4.1 Setup
-%   §4.2 RQ3 — In-Record / Snapshot-Only Verification  (HEADLINE)
-%   §4.3 RQ4 — Robustness against 9 memory-specific attacks
-%   §4.4 RQ2 — Capacity
-%   §4.5 RQ1 — Controlled Utility Trade-off
+%   §4.2 RQ1 — Utility Preservation
+%   §4.3 RQ2 — Capacity
+%   §4.4 RQ3 — In-Record / Snapshot-Only Verification (HEADLINE)
+%   §4.5 RQ4 — Robustness against 9 memory-lifecycle attacks
 %   §4.6 RQ5 — Memory Integrity
 %
-% Rationale: the central claim of the paper is snapshot-only
-% attribution (RQ3), and RQ4 directly buttresses it. RQ2 reports
-% the capacity that makes attribution non-trivial. Utility is then
-% framed as a controlled trade-off (table~\ref{tab:tradeoff}),
-% not a preservation claim. RQ5 is a sanity check that ingestion
-% wasn't broken.
+% Rationale: standard watermark-paper layout. RQ1 is the gate
+% ("watermark doesn't break memory"); only once that gate is
+% passed does RQ3's attribution claim become meaningful. RQ3 is
+% still flagged as the headline experiment in its subsection
+% title and in the contributions list.
 % ============================================================
 \section{Experiments}
 \label{sec:exp}
@@ -48,15 +44,45 @@ comparison.}
 \input{tables/metric_definitions}
 
 % ============================================================
+\subsection{RQ1 — Utility Preservation}
+\label{sec:rq1}
+% ============================================================
+\todo{Question: does watermark embedding break memory system
+utility? Setup: \texttt{no-watermark} vs \texttt{+ watermark} on F1
+/ BLEU-1 / ROUGE-L across two LLMs and two backends. Result: F1
+deltas fall within statistical noise of the unwatermarked baseline
+and have inconsistent sign across LLMs, consistent with
+Lemma~\ref{lem:dist-preserve}'s per-decision distribution-preservation
+guarantee; \texttt{signed-metadata-only} matches \texttt{no-watermark}
+F1, confirming the audit-trace machinery itself is utility-neutral.}
+
+\input{tables/main_results}
+\input{figures/per_category}
+
+% ============================================================
+\subsection{RQ2 — Capacity}
+\label{sec:rq2}
+% ============================================================
+\todo{Question: how many bits can the memory evolve decisions carry?
+Report (i) avg $|\candset|$ and $H(\probdist)$ per carrier
+(theoretical upper bound), (ii) bits per decision / session /
+episode (actual), (iii) bits per 100 conversation turns. Addresses
+the reviewer attack ``prompted enumeration $\neq$ intrinsic
+decision freedom'' by showing per-backend $H(\probdist)$
+distributions are non-trivially above zero (mean
+$\approx 1.07$ vs the $\log_2 K \approx 1.58$ ceiling for $K{=}3$).}
+
+\input{tables/capacity}
+\input{figures/entropy_histogram}
+
+% ============================================================
 \subsection{RQ3 — Snapshot-Only / Partial-Log Verification (Headline)}
 \label{sec:rq3}
 % ============================================================
 \paragraph{Why this is the headline.} \todo{In the most forensically
 valuable setting — memory leaked / distilled / migrated — the
 action trajectory is gone. RQ3 tests whether \memmark{} can still
-attribute. This is the central claim of the paper; everything that
-follows (robustness, capacity, utility trade-off) supports or
-quantifies the price of this guarantee.}
+attribute. This is the central claim of the paper.}
 
 \paragraph{Three regimes.} \todo{R1 = full external log (audit
 upper bound). R2 = partial log with keep ratio $r \in \{0.1, 0.3,
@@ -77,6 +103,15 @@ the only point in the regime matrix that succeeds at R3.}
 
 \input{figures/r2_curve}
 
+\paragraph{R3 = 1.00 sanity checks.} \todo{Three orthogonal
+controls rule out a trivial verifier returning constant 1.0:
+(a) wrong-key gives $0.15 \ll 1/K \approx 0.33$, proving the
+verifier depends on the secret key; (b) \texttt{signed-metadata-only}
+gives $0$ under the same R3 protocol, proving the bit-decoding
+step is actually executed; (c) the R2 sweep is strictly monotone
+in keep ratio, proving the verifier counts kept-leaf bits rather
+than short-circuiting.}
+
 % ============================================================
 \subsection{RQ4 — Robustness Against Memory-Specific Attacks}
 \label{sec:rq4}
@@ -92,77 +127,27 @@ structural attacks fire \texttt{missing\_leaves\_rate}.}
 \paragraph{Per-leaf inclusion proof keeps bit recovery smooth.}
 \todo{Method B (\S\ref{sec:method-audit}) stores each leaf's
 Merkle path at seal time, so structural removal (pruning, dedup,
-poisoning, compaction) does not invalidate surviving leaves. As a
-result \texttt{bit\_recovery\_post} stays at $1.00$ under pruning
-at all three strengths (every kept leaf still verifies) and the
-removal itself is reported via \texttt{missing\_leaves\_rate}.
-Content-tamper attacks (manual\_edits, paraphrase\_rewrite,
-edge\_relabel, subgraph\_reanchor, supersession) show smooth
-linear degradation in \texttt{bit\_recovery\_post} matched by
-linear \texttt{commitment\_fail\_rate} — exactly the desired
-behavior. See Figure~\ref{fig:attack-signal-split}.}
+poisoning, compaction) does not invalidate surviving leaves.
+\texttt{bit\_recovery\_post} stays at $1.00$ under pruning at all
+three strengths and the removal itself is reported via
+\texttt{missing\_leaves\_rate}. Content-tamper attacks
+(manual\_edits, paraphrase\_rewrite, edge\_relabel,
+subgraph\_reanchor, supersession) show linear degradation in
+\texttt{bit\_recovery\_post} matched by linear
+\texttt{commitment\_fail\_rate}. See
+Figure~\ref{fig:attack-signal-split}.}
 
 \input{figures/attack_signals}
-
-% ============================================================
-\subsection{RQ2 — Capacity}
-\label{sec:rq2}
-% ============================================================
-\todo{The headline requires the watermark to carry non-trivial
-information. We report (i) average $|\candset|$ and $H(\probdist)$
-per carrier (theoretical upper bound), (ii) bits per decision /
-session / episode (actual realized capacity), (iii) bits per
-100 conversation turns. Per-backend $H(\probdist)$ distributions
-are significantly above zero, which addresses the reviewer attack
-``prompted enumeration $\neq$ intrinsic decision freedom''.}
-
-\input{tables/capacity}
-\input{figures/entropy_histogram}
-
-% ============================================================
-\subsection{RQ1 — Controlled Utility Trade-off}
-\label{sec:rq1}
-% ============================================================
-\todo{We are not claiming utility preservation; we are quantifying
-the cost of the RQ3 guarantee. Watermark embedding biases keyword
-/ tag / context choices away from the LLM's argmax, which slightly
-degrades downstream retrieval recall (RQ5
-\texttt{evidence\_recall\_mean}), which in turn slightly degrades
-QA F1. We measure both endpoints and report the trade-off
-explicitly.}
-
-\input{tables/tradeoff_comparison}
-
-\paragraph{Per-benchmark numbers.} \todo{On \locomo{} the relative
-F1 drop is $\approx 6{-}7\%$; on \longmemeval{} and \mab{}
-\todo{numbers TBD with multi-seed runs}. Per-category breakdown
-(Table~\ref{tab:main-results}) shows the cost is uniform across
-the five QA categories with no pathological category-level
-collapse.}
-
-\input{tables/main_results}
-\input{figures/per_category}
-
-\paragraph{Why this trade-off shape is the right one.} \todo{The
-\texttt{signed-metadata-only} baseline matches \texttt{no-watermark}
-F1 to within statistical noise, which proves the audit-trace
-machinery itself is utility-neutral. The $\sim$7\% gap is therefore
-attributable to the keyed bit-embedding alone, and it buys the
-$1.00$ snapshot-only attribution that no other method in
-Table~\ref{tab:tradeoff} provides. Section~\ref{sec:discuss}
-discusses why retrieval-aware sampling is a natural follow-up to
-narrow this gap.}
 
 % ============================================================
 \subsection{RQ5 — Memory Integrity}
 \label{sec:rq5}
 % ============================================================
-\todo{Sanity check that ingestion completed correctly. We report
-only metrics that are computable end-to-end on \locomo{}: overall
-snapshot size, per-$\carrier$ carrier-distribution, QA-time
-evidence-grounded retrieval recall, write\_failures. LoCoMo does
-not ship update / link / merge correctness labels, so we do not
-claim those.}
+\todo{Sanity check that ingestion completed correctly. Report only
+metrics computable end-to-end on \locomo{}: overall snapshot size,
+per-$\carrier$ carrier-distribution, QA-time evidence-grounded
+retrieval recall, write\_failures. LoCoMo does not ship update /
+link / merge correctness labels, so we do not claim those.}
 
 \input{tables/integrity}
 

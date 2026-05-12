@@ -1,5 +1,5 @@
 % ============================================================
-% Discussion / Limitations — supports the trade-off framing.
+% Discussion / Limitations — three-pillar framing.
 % ============================================================
 \section{Discussion}
 \label{sec:discuss}
@@ -7,44 +7,32 @@
 \paragraph{Why state-evolution, not action.}
 \todo{Summarize the trajectory-vs-state argument from \S\ref{sec:intro}
 plus the empirical R3 vs Action-layer comparison from
-\S\ref{sec:rq3}. The single line: action-layer attribution rates
-collapse to zero exactly when attribution matters most (memory has
-left the original system, trajectory has been pruned).}
+\S\ref{sec:rq3}. Action-layer attribution rates collapse to zero
+exactly when attribution matters most (memory has left the original
+system, trajectory has been pruned).}
 
-\paragraph{What the distribution-preservation guarantee buys, and what it doesn't.}
+\paragraph{What the distribution-preservation guarantee buys.}
 \todo{Lemma \ref{lem:dist-preserve} is a per-decision marginal
-guarantee. We do \emph{not} claim end-to-end answer-distribution
-preservation across the full QA pipeline — the $\sim$7\% relative
-F1 drop in \S\ref{sec:rq1} is the empirical price of biasing
-selection toward the keyed pick. \texttt{signed-metadata-only}
-matches \texttt{no-watermark} F1, confirming the cost is the
-keyed-pick selection itself, not the audit-trace machinery around
-it. Retrieval-aware sampling that preserves keyword distribution
-is an obvious follow-up to narrow this gap.}
-
-\paragraph{The trade-off shape.}
-\todo{Table~\ref{tab:tradeoff} is the headline summary: metadata
-provenance is free but unverifiable in adversarial storage;
-trajectory-bound watermarks are unverifiable once the trajectory
-is gone; \memmark{} is the only point that costs anything \emph{and}
-delivers snapshot-only attribution. We argue the trade-off is the
-right one for the forensic setting where the alternatives don't
-function at all.}
+guarantee. Empirically (\S\ref{sec:rq1}), F1 deltas across LLMs
+fall within statistical noise with inconsistent sign — consistent
+with the guarantee. The \texttt{signed-metadata-only} baseline
+matches \texttt{no-watermark} F1, isolating the cost of the
+keyed-pick selection itself from the audit-trace machinery around
+it.}
 
 \paragraph{Limitations.}
 \todo{(i) Backend coverage limited to \amem{} / \graphiti{};
-extending to MemOS / MemMachine is engineering. (ii) Adversary that
-can both write the snapshot \emph{and} read the secret key trivially
-forges; we assume the key is not exfiltrated. (iii) cat-5
-adversarial questions remain hard; F1 lifted to $\approx 0.4$ after
-the loader fix but still below paper-level for some backends. (iv)
-\texttt{contradiction\_rate} / merge / delete / stale-memory /
-temporal consistency need ground-truth labels and are not reported
-in this draft.}
+extending to MemOS / MemMachine is engineering. (ii) Adversary
+that can both write the snapshot \emph{and} read the secret key
+trivially forges; we assume the key is not exfiltrated.
+(iii) cat-5 adversarial questions remain difficult; F1 lifted to
+$\approx 0.4$ after the cat-5 loader fix but still below paper-level
+for some backends. (iv) Update / link / merge / delete / stale-memory
+/ temporal-consistency integrity require LongMemEval-style
+ground-truth labels and are not reported in this draft.}
 
 \paragraph{Future work.}
-\todo{(i) Retrieval-aware sampler to close the RQ1 gap.
-(ii) Larger $K$ — current self-reported enumeration is $K=4$;
+\todo{(i) Larger $K$ — current self-reported enumeration is $K=4$;
 $K{=}8$ doubles per-decision capacity but cost / quality trade-off
-needs study. (iii) Online attestation for streaming agents.
-(iv) Cross-session anchor chaining for long-running deployments.}
+needs study. (ii) Online attestation for streaming agents.
+(iii) Cross-session anchor chaining for long-running deployments.}

@@ -1,10 +1,6 @@
 % ============================================================
-% Abstract — attribution-first framing.
-% Old version led with "utility-preserving watermark"; new version
-% leads with R3 bit_recovery=1.00 (the headline) and positions the
-% ~7% utility cost as a controlled trade-off against text-layer
-% and action-layer watermarks that fail outright in the forensic
-% snapshot-only setting.
+% Abstract — three pillars: (1) the watermark mechanism,
+% (2) R3 attribution headline, (3) utility preservation.
 % ============================================================
 
 \begin{abstract}
@@ -15,19 +11,19 @@ distilled, or migrates across systems — the holder of the snapshot
 \emph{is} the writer. Token-level and action-layer watermarks
 likewise fail because the original output text and action
 trajectory are gone before the memory leaves the system. We
-present \memmark{}, which embeds attribution into the memory
-system's own latent evolve decisions: at each internal LLM call we
-elicit $K$ equivalent candidates with self-reported weights, then
-keyed-pick via the distribution-preserving \agentmark{} sampler.
-Each selection is committed into a Merkle log whose signed anchor
-and per-leaf inclusion proofs live inside the snapshot itself.
-\textbf{Headline:} on \locomo{} across \amem{} and \graphiti{},
-\memmark{} achieves R3 (snapshot-only) bit\_recovery $= 1.00$,
-versus $0$ for a \texttt{signed-metadata-only} baseline and $0.15$
-for the wrong-key control. The watermark stays robust under nine
-memory-lifecycle attacks (RQ4) and embeds 40 bits/session (RQ2).
-The cost is a controlled $\sim$7\% relative F1 trade-off (RQ1),
-comparable to text-layer watermarks (KGW reports 5–15\%) and far
-preferable to the alternative of trajectory-bound attribution that
-collapses to $0$ in forensic settings.}
+present \memmark{}, a watermark for long-term agent memory
+systems that embeds attribution into the memory backend's own
+latent evolve decisions: at each internal LLM call we elicit $K$
+equivalent candidates with self-reported weights, then keyed-pick
+via the distribution-preserving \agentmark{} binning sampler. Each
+selection is committed into a Merkle log whose signed anchor and
+per-leaf inclusion proofs are co-located with the memory record
+itself. On \locomo{} across \amem{} and \graphiti{}, \memmark{}
+(i) \textbf{preserves utility} on F1 / BLEU-1 / ROUGE-L within
+statistical noise of the unwatermarked baseline; (ii) achieves
+\textbf{R3 (snapshot-only) bit\_recovery $= 1.00$} versus $0$ for
+a \texttt{signed-metadata-only} baseline and $0.15$ for the
+wrong-key control — the central claim of the paper; (iii) remains
+\textbf{robust} under nine memory-lifecycle attacks. Code, audit
+traces, and benchmarks are released.}
 \end{abstract}
