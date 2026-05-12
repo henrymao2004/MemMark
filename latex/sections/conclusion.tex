@@ -1,13 +1,16 @@
 % ============================================================
-% Conclusion — one paragraph
+% Conclusion — attribution-first, trade-off honest.
 % ============================================================
 \section{Conclusion}
 \label{sec:conclusion}
 
-\todo{Conclude: \memmark{} moves attribution from honest-writer
-metadata to keyed behavioral trace embedded in the memory system's
-own latent evolve decisions. Three carriers, two backends, three
-benchmarks. Headline R3 lets a verifier holding only a memory
-snapshot and the secret key reconstruct authorship without any
-external audit store — exactly the setting where action-layer
-watermarks fail. Code, data, and audit traces released.}
+\todo{\memmark{} delivers a capability no prior watermark or
+provenance scheme provides: \textbf{snapshot-only writer
+attribution} (R3 bit\_recovery = $1.00$) under the
+adversarial-storage threat model, where field-stamping provenance
+is forgeable and trajectory-bound watermarks have no signal left to
+read. The price is a controlled $\sim$7\% relative F1 trade-off
+(Table~\ref{tab:tradeoff}), in line with text-layer watermarks and
+strictly preferable to the $0$ attribution rate of every
+alternative in the forensic setting. Code, audit traces, and the
+nine-attack benchmark are released.}

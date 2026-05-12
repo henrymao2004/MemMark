@@ -1,27 +1,33 @@
 % ============================================================
-% Abstract — 1 paragraph, ~150 words.
-% Mirrors README §1.1–§1.4 storyline:
-%   problem (provenance is honest-writer) →
-%   threat (attacker controls memory snapshot) →
-%   method (keyed decisions on evolve carriers) →
-%   headline (In-Record Attribution Verification, R3) →
-%   evaluation (3 benchmarks × 2 backends, RQ1–5).
+% Abstract — attribution-first framing.
+% Old version led with "utility-preserving watermark"; new version
+% leads with R3 bit_recovery=1.00 (the headline) and positions the
+% ~7% utility cost as a controlled trade-off against text-layer
+% and action-layer watermarks that fail outright in the forensic
+% snapshot-only setting.
 % ============================================================
 
 \begin{abstract}
-\todo{Abstract: provenance-as-fields is honest-writer; attacker who
-holds the memory snapshot can rewrite every metadata field.
-\memmark{} embeds attribution into the memory system's own latent
-evolve decisions (which existing memory to update / link / how to
-phrase the new memory) via PRF-keyed sampling on the
-distribution-preserving \agentmark{} sampler, and binds those
-decisions into a commitment + Merkle log whose anchor lives inside
-the memory snapshot. Headline: In-Record Attribution Verification
-(R3) decodes the writer's key from snapshot alone — no external
-audit store. Evaluated on \locomo{} / \longmemeval{} / \mab{} across
-\amem{} and \graphiti{}, \memmark{} preserves utility (RQ1, F1
-within statistical noise), embeds non-trivial capacity (RQ2,
-$\approx$0.05 bits/decision), recovers bits at $\sim$1.0 in R1/R3
-(RQ3), degrades smoothly under 9 memory-specific attacks (RQ4), and
-introduces no integrity regression (RQ5).}
+\todo{Field-stamping provenance (TierMem, MemOS, enterprise
+tagging) assumes the writer is honest, but in the most
+forensically valuable setting — a memory snapshot leaks, is
+distilled, or migrates across systems — the holder of the snapshot
+\emph{is} the writer. Token-level and action-layer watermarks
+likewise fail because the original output text and action
+trajectory are gone before the memory leaves the system. We
+present \memmark{}, which embeds attribution into the memory
+system's own latent evolve decisions: at each internal LLM call we
+elicit $K$ equivalent candidates with self-reported weights, then
+keyed-pick via the distribution-preserving \agentmark{} sampler.
+Each selection is committed into a Merkle log whose signed anchor
+and per-leaf inclusion proofs live inside the snapshot itself.
+\textbf{Headline:} on \locomo{} across \amem{} and \graphiti{},
+\memmark{} achieves R3 (snapshot-only) bit\_recovery $= 1.00$,
+versus $0$ for a \texttt{signed-metadata-only} baseline and $0.15$
+for the wrong-key control. The watermark stays robust under nine
+memory-lifecycle attacks (RQ4) and embeds 40 bits/session (RQ2).
+The cost is a controlled $\sim$7\% relative F1 trade-off (RQ1),
+comparable to text-layer watermarks (KGW reports 5–15\%) and far
+preferable to the alternative of trajectory-bound attribution that
+collapses to $0$ in forensic settings.}
 \end{abstract}

@@ -50,28 +50,48 @@ reveal record co-located with the memory record itself. Forward to
 \S\ref{sec:rq3} for the numbers.}
 
 % ---------- §1.5 contributions ----------
+% NOTE: order reflects the attribution-first reframe.
+% Old order led with backend taxonomy; new order leads with R3
+% headline so the reader sees the central claim of the paper before
+% the engineering pieces that enable it.
 \paragraph{Contributions.}
 \begin{enumerate}[topsep=2pt,itemsep=2pt,leftmargin=*]
-\item \textbf{Backend-invariant evolve carrier taxonomy.} \todo{One
-  sentence on the $\langle \carrier, \candset, \probdist, \ctx
-  \rangle$ formalization in \S\ref{sec:method-formal} and the
-  $\sim$50–100-line native-API wrapper.}
-\item \textbf{LLM-call-boundary interception with self-reported
-  candidate weights.} \todo{One sentence on the
-  \agentmark{}-style 1-call enumeration in
-  \S\ref{sec:method-interception} that produces $(\candset, \probdist)$
-  from an unbounded structured-JSON LLM output.}
+\item \textbf{In-Record Attribution Verification (R3).}
+  \todo{One sentence on the three-regime hierarchy
+  (\S\ref{sec:rq3}) and the headline finding: \memmark{} recovers
+  the full payload from snapshot alone (bit\_recovery $= 1.00$),
+  while a \texttt{signed-metadata-only} baseline drops to $0$ and
+  the wrong-key control drops to $0.15$. This is the central
+  claim — no prior watermark or provenance scheme provides
+  snapshot-only attribution under the adversarial-storage threat
+  model.}
 \item \textbf{Cryptographic audit trace for memory evolution.}
-  \todo{One sentence on the commitment + Merkle log + signed
-  anchor design in \S\ref{sec:method-audit}, plus the per-leaf
-  inclusion proof that makes R3 robust to structural attacks.}
-\item \textbf{In-Record Attribution Verification.} \todo{One
-  sentence on the three regimes in \S\ref{sec:rq3} and the
-  \texttt{signed-metadata-only} baseline used to isolate the
-  marginal value of the watermark over pure metadata.}
-\item \textbf{Memory-specific evaluation.} \todo{One sentence on
-  the $9$ attack threat model in \S\ref{sec:rq4} and the
-  three benchmarks (\locomo, \longmemeval, \mab).}
+  \todo{One sentence on commitment + per-session Merkle log +
+  signed in-snapshot anchor + per-leaf inclusion proof
+  (\S\ref{sec:method-audit}). The inclusion proof is what makes R3
+  smooth under structural attacks (pruning / dedup / poisoning) —
+  each leaf verifies independently against the anchor, so removing
+  leaves does not invalidate the survivors.}
+\item \textbf{Backend-invariant evolve carrier taxonomy.}
+  \todo{One sentence on the $\langle \carrier, \candset, \probdist,
+  \ctx \rangle$ formalization (\S\ref{sec:method-formal}) and the
+  $\sim$50–100-line native-API wrapper that suffices to instrument
+  any memory backend exposing the three carriers.}
+\item \textbf{LLM-call-boundary interception with self-reported
+  candidate weights.} \todo{One sentence on the \agentmark-style
+  1-call enumeration (\S\ref{sec:method-interception}) that
+  produces $(\candset, \probdist)$ from an unbounded structured-JSON
+  LLM output, enabling distribution-preserving keyed sampling on a
+  third-party SDK without touching its internals.}
+\item \textbf{Memory-specific evaluation under a controlled
+  utility trade-off.} \todo{One sentence on the nine memory-lifecycle
+  attack threat model (\S\ref{sec:rq4}) and the framing of
+  utility cost as a quantified trade-off rather than a
+  preservation claim: \memmark{} pays $\sim$7\% relative F1
+  (\S\ref{sec:rq1}) — comparable to KGW and SynthID's 5–15\% — in
+  exchange for the attribution guarantees of contribution (i),
+  none of which the alternatives provide in the snapshot-only
+  setting.}
 \end{enumerate}
 
 % ---------- pointer figure ----------
