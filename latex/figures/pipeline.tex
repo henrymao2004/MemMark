@@ -23,7 +23,7 @@
 \node[sampler, right=of enum] (samp) {Binning\\sampler $\nonceT$};
 \node[audit, below=10mm of samp] (commit) {Commitment\\$\commit$};
 \node[audit, left=of commit] (merkle) {Per-session\\Merkle log};
-\node[audit, left=of merkle] (anchor) {Signed anchor\\$\header_T$};
+\node[audit, left=of merkle] (anchor) {Signed anchor\\$\header_{T}$};
 
 % Storage
 \node[store, below=10mm of backend] (store) {Memory snapshot\\+ in-record sidecar};
@@ -42,7 +42,7 @@
 
 % Persistence
 \draw[flowdash] (backend) -- (store);
-\draw[flowdash] (commit) to[bend right=15] node[right,font=\scriptsize]{$\reveal_t$} (store);
+\draw[flowdash] (commit) to[bend right=15] node[right,font=\scriptsize]{$\reveal_{t}$} (store);
 \draw[flowdash] (anchor) to[bend left=15] node[below,font=\scriptsize]{$\header_T$} (store);
 
 \end{tikzpicture}

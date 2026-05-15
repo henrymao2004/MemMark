@@ -4,26 +4,24 @@
 % ============================================================
 
 \begin{abstract}
-\todo{Field-stamping provenance (TierMem, MemOS, enterprise
-tagging) assumes the writer is honest, but in the most
-forensically valuable setting — a memory snapshot leaks, is
-distilled, or migrates across systems — the holder of the snapshot
-\emph{is} the writer. Token-level and action-layer watermarks
-likewise fail because the original output text and action
-trajectory are gone before the memory leaves the system. We
-present \memmark{}, a watermark for long-term agent memory
-systems that embeds attribution into the memory backend's own
-latent evolve decisions: at each internal LLM call we elicit $K$
-equivalent candidates with self-reported weights, then keyed-pick
-via the distribution-preserving \agentmark{} binning sampler. Each
-selection is committed into a Merkle log whose signed anchor and
-per-leaf inclusion proofs are co-located with the memory record
-itself. On \locomo{} across \amem{} and \graphiti{}, \memmark{}
-(i) \textbf{preserves utility} on F1 / BLEU-1 / ROUGE-L within
-statistical noise of the unwatermarked baseline; (ii) achieves
-\textbf{R3 (snapshot-only) bit\_recovery $= 1.00$} versus $0$ for
-a \texttt{signed-metadata-only} baseline and $0.15$ for the
-wrong-key control — the central claim of the paper; (iii) remains
-\textbf{robust} under nine memory-lifecycle attacks. Code, audit
-traces, and benchmarks are released.}
+\memmark{} is a watermark for long-term agent memory systems that
+embeds attribution into the backend's own latent state-evolution
+decisions. The core challenge is forensic: when a memory snapshot leaks,
+is distilled, or migrates across systems, the visible action trajectory
+and user-facing output are usually gone, so action-layer and text-layer
+watermarks no longer apply. Our method elicits multiple admissible
+candidates at each internal LLM call, keyed-selects among them with a
+distribution-preserving sampler, and commits the resulting decisions
+into an audit trace that is verifiable even when the external log is
+missing.
+
+Across \amem{} and \graphiti{} on \locomo{}, \memmark{} preserves
+utility within statistical noise of the unwatermarked baseline,
+achieves full snapshot-only attribution,
+and remains robust under a broad set of memory-lifecycle attacks.
+Taken together, these results show that memory attribution is feasible
+without sacrificing the utility that makes long-term memory worth
+using in the first place.
+
+Code, audit traces, and benchmarks are released.
 \end{abstract}

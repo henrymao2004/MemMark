@@ -1,32 +1,29 @@
 % ============================================================
-% Table: RQ2 capacity per carrier
+% Table: RQ2 capacity summary across models/backends
 % ============================================================
 \begin{table}[t]
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{llS[table-format=1.3]S[table-format=1.3]S[table-format=2.0]S[table-format=1.4]}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{llcccc}
 \toprule
-Backend & Carrier & {Avg $|\candset|$} & {Avg $H(\probdist)$} & {Decisions} & {bits/dec} \\
+Model & Backend & {Avg $|\candset|$} & {Avg $H(\probdist)$} & {Decisions} & {bits/dec} \\
 \midrule
-\multirow{3}{*}{\amem{}}
-  & \texttt{update\_target}        & \todo{} & \todo{} & \todo{} & \todo{} \\
-  & \texttt{link\_target}          & \todo{} & \todo{} & \todo{} & \todo{} \\
-  & \texttt{semantic\_realization} & \todo{} & \todo{} & \todo{} & \todo{} \\
+\multirow{2}{*}{\texttt{qwen3\_6\_flash}}
+  & \amem{}    & 2.995 & 1.003 & 837  & 0.0478 \\
+  & \graphiti{} & 2.995 & 1.003 & 837  & 0.0478 \\
 \midrule
-\multirow{3}{*}{\graphiti{}}
-  & \texttt{update\_target}        & \todo{} & \todo{} & \todo{} & \todo{} \\
-  & \texttt{link\_target}          & \todo{} & \todo{} & \todo{} & \todo{} \\
-  & \texttt{semantic\_realization} & \todo{} & \todo{} & \todo{} & \todo{} \\
+\multirow{2}{*}{\texttt{glm-5}}
+  & \amem{}    & 2.998 & 1.002 & 837  & 0.0478 \\
+  & \graphiti{} & 3.702 & 1.377 & 1563 & 0.0256 \\
 \midrule
-\multicolumn{2}{l}{\textbf{Overall (per 100 turns)}}
-  & \multicolumn{4}{c}{\todo{bits per 100 turns}} \\
+\multirow{2}{*}{\texttt{deepseek-v4-pro}}
+  & \amem{}    & 2.998 & 1.265 & 838  & 0.0489 \\
+  & \graphiti{} & 3.508 & 1.264 & 1516 & 0.0264 \\
 \bottomrule
-\end{tabular}
-\caption{\textbf{RQ2 — Per-carrier capacity}. Average candidate set
-size and entropy of the LLM self-reported distribution, total
-decisions, and realized bits per decision. Non-trivial
-$H(\probdist) > 0$ rules out the reviewer attack ``prompted
-enumeration does not constitute intrinsic decision freedom''.}
+\end{tabular}%
+}
+\caption{\textbf{RQ2 --- Capacity across \locomo{} model--backend settings.} Values are computed from the \textbf{MemMark} runs and report average candidate set size, average self-reported entropy, total watermarkable decisions, and realized bits per decision.}
 \label{tab:capacity}
 \end{table}

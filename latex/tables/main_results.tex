@@ -1,40 +1,56 @@
-% ============================================================
-% Table: Main RQ1 utility results
-%   columns: per category F1 / BLEU-1 / ROUGE-L + overall
-%   rows: 4 baselines × 2 backends × 2 LLMs
-% Numbers paper-comparable to A-mem Table 1 (set-based F1).
-% ============================================================
+% Add to preamble:
+% \usepackage[table]{xcolor}
+% \newcommand{\best}[1]{\cellcolor{green!18}#1}
+
 \begin{table*}[t]
-\centering
-\small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{llcccccccccccc}
-\toprule
-& & \multicolumn{2}{c}{Single Hop (1)} & \multicolumn{2}{c}{Temporal (2)} & \multicolumn{2}{c}{Multi Hop (3)} & \multicolumn{2}{c}{Open Domain (4)} & \multicolumn{2}{c}{Adversarial (5)} & \multicolumn{2}{c}{\textbf{Overall}} \\
-\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}\cmidrule(lr){9-10}\cmidrule(lr){11-12}\cmidrule(lr){13-14}
-Backend & Method & F1 & BLEU & F1 & BLEU & F1 & BLEU & F1 & BLEU & F1 & BLEU & F1 & BLEU \\
-\midrule
-\multirow{4}{*}{\amem{}}
-  & \texttt{no-watermark}        & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} \\
-  & \texttt{random-replace}      & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} \\
-  & \texttt{signed-metadata-only}& \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} \\
-  & \textbf{\memmark}            & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} \\
-\midrule
-\multirow{5}{*}{\graphiti{}}
-  & \texttt{no-watermark}        & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} \\
-  & \texttt{random-replace}      & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} \\
-  & \texttt{signed-metadata-only}& \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} \\
-  & \kgmark{}                    & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} \\
-  & \textbf{\memmark}            & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} & \todo{}&\todo{} \\
-\bottomrule
-\end{tabular}
-\caption{\textbf{RQ1 — Utility preservation on \locomo}. Per-category F1 / BLEU-1
-under \amem{} and \graphiti{} backends. Metric formula follows
-\amem{} \texttt{utils.py:135--145} (set-based, no stemming) for
-direct paper-comparability. ROUGE-L omitted from this main table
-for space; see Appendix~\ref{app:per-conv}. \memmark{} should fall
-within statistical noise of \texttt{no-watermark}; the gap to
-\texttt{signed-metadata-only} measures the marginal value of keyed
-embedding.}
-\label{tab:main-results}
+  \centering
+  \scriptsize
+  \setlength{\tabcolsep}{3pt}
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{lllcccccccccccc}
+  \toprule
+  & & & \multicolumn{2}{c}{Single Hop (1)} & \multicolumn{2}{c}{Temporal (2)} & \multicolumn{2}{c}{Multi Hop (3)} & \multicolumn{2}{c}{Open Domain (4)} & \multicolumn{2}{c}{Adversarial (5)} & \multicolumn{2}{c}{\textbf{Overall}} \\
+  \cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}\cmidrule(lr){10-11}\cmidrule(lr){12-13}\cmidrule(lr){14-15}
+  Model & Backend & Method & F1 & BLEU & F1 & BLEU & F1 & BLEU & F1 & BLEU & F1 & BLEU & F1 & BLEU \\
+  \midrule
+  \multirow{9}{*}{Qwen3.6-Flash}
+    & \multirow{4}{*}{A-MEM} & \texttt{No-WM}     & 0.1974 & 0.2373 & 0.3732 & 0.5360 & 0.1363 & 0.2333 & 0.4107 & 0.4265 & 0.1289 & 0.1234 & 0.2850 & 0.3322 \\
+    &                         & \texttt{S.M.-Only} & 0.2127 & 0.2682 & \best{0.4727} & \best{0.5676} & 0.1884 & 0.3295 & 0.4115 & 0.4278 & \best{0.2251} & \best{0.2072} & \best{0.3323} & \best{0.3696} \\
+    &                         & \texttt{Ran.}      & 0.2305 & \best{0.3364} & 0.4309 & 0.5541 & \best{0.2595} & \best{0.3761} & 0.3479 & 0.3810 & 0.1980 & 0.1859 & 0.3033 & 0.3596 \\
+    &                         & \textbf{MemMark}   & \best{0.2559} & 0.3197 & 0.4143 & 0.5248 & 0.1840 & 0.2922 & \best{0.4117} & \best{0.4434} & 0.1243 & 0.1114 & 0.3044 & 0.3504 \\
+\cmidrule(l){2-15}
+    & \multirow{5}{*}{Graphiti} & \texttt{No-WM}     & \best{0.1903} & \best{0.2736} & 0.2867 & 0.3501 & 0.2905 & 0.3243 & 0.3543 & 0.3748 & \best{0.1257} & \best{0.1277} & 0.2572 & 0.2923 \\
+    &                         & \texttt{S.M.-Only} & 0.1524 & 0.2131 & 0.3022 & 0.3604 & 0.3507 & 0.4615 & 0.3570 & 0.4023 & \best{0.1257} & \best{0.1277} & \best{0.2589} & \best{0.3031} \\
+    &                         & \texttt{Ran.}      & 0.1792 & 0.2587 & 0.3019 & 0.3658 & 0.3123 & 0.4231 & \best{0.3614} & 0.3839 & 0.0488 & 0.0426 & 0.2440 & 0.2823 \\
+    &                         & \texttt{KGMARK}    & 0.1538 & 0.2365 & 0.2878 & 0.3536 & \best{0.3845} & \best{0.5556} & 0.3589 & \best{0.4088} & 0.0887 & 0.0798 & 0.2505 & 0.3027 \\
+    &                         & \textbf{MemMark}   & 0.1389 & 0.2319 & \best{0.4084} & \best{0.4865} & 0.1865 & 0.3189 & 0.3364 & 0.3719 & 0.0701 & 0.0638 & 0.2453 & 0.2945 \\
+  \midrule
+  \multirow{9}{*}{GLM-5}
+    & \multirow{4}{*}{A-MEM} & \texttt{No-WM}     & 0.2340 & 0.2868 & 0.3562 & 0.3908 & 0.2319 & 0.2452 & \best{0.4677} & 0.4592 & 0.0520 & 0.0438 & 0.2958 & 0.3067 \\
+    &                         & \texttt{S.M.-Only} & 0.2342 & 0.3152 & 0.4144 & \best{0.4689} & 0.1927 & 0.2088 & 0.4463 & \best{0.4621} & 0.0408 & 0.0276 & 0.2939 & 0.3205 \\
+    &                         & \texttt{Ran.}      & 0.1875 & 0.2714 & \best{0.4266} & 0.4428 & 0.1838 & 0.2001 & 0.4516 & 0.4571 & \best{0.0710} & \best{0.0643} & 0.2971 & 0.3150 \\
+    &                         & \textbf{MemMark}   & \best{0.3067} & \best{0.3491} & 0.4139 & 0.4438 & \best{0.2774} & \best{0.2803} & 0.4489 & 0.4491 & 0.0670 & 0.0638 & \best{0.3181} & \best{0.3300} \\
+  \cmidrule(l){2-15}
+    & \multirow{5}{*}{Graphiti} & \texttt{No-WM}     & \best{0.1686} & \best{0.2731} & \best{0.2844} & 0.3033 & 0.1474 & 0.1611 & 0.3487 & 0.3492 & 0.0914 & 0.0851 & 0.2338 & 0.2538 \\
+    &                         & \texttt{S.M.-Only} & 0.1352 & 0.2203 & 0.2575 & 0.2713 & 0.1585 & 0.1519 & 0.3397 & 0.3633 & 0.0779 & 0.0673 & 0.2179 & 0.2395 \\
+    &                         & \texttt{Ran.}      & 0.1180 & 0.2154 & 0.2696 & \best{0.3254} & 0.1567 & 0.1628 & 0.3390 & 0.3501 & 0.0488 & 0.0426 & 0.2101 & 0.2390 \\
+    &                         & \texttt{KGMARK}    & 0.1473 & 0.2324 & 0.2436 & 0.2550 & \best{0.2237} & \best{0.2643} & \best{0.3674} & \best{0.3773} & \best{0.1126} & \best{0.1064} & \best{0.2394} & \best{0.2599} \\
+    &                         & \textbf{MemMark}   & 0.1060 & 0.1901 & 0.2518 & 0.2725 & 0.1199 & 0.1203 & 0.3532 & 0.3580 & 0.0968 & 0.0946 & 0.2188 & 0.2374 \\
+  \midrule
+  \multirow{9}{*}{DeepseekV4-Pro}
+    & \multirow{4}{*}{A-MEM} & \texttt{No-WM}     & 0.1974 & 0.2373 & 0.3732 & 0.5360 & 0.1363 & 0.2333 & 0.4107 & 0.4265 & 0.1289 & 0.1234 & 0.2850 & 0.3322 \\
+    &                         & \texttt{S.M.-Only} & 0.2127 & 0.2682 & \best{0.4727} & \best{0.5676} & 0.1884 & \best{0.3295} & 0.4115 & 0.4278 & \best{0.2251} & \best{0.2072} & 0.3323 & \best{0.3696} \\
+    &                         & \texttt{Ran.}      & 0.2105 & 0.2315 & 0.4359 & 0.5108 & \best{0.2335} & 0.3049 & \best{0.4605} & \best{0.4620} & 0.2083 & 0.1883 & \best{0.3413} & 0.3591 \\
+    &                         & \textbf{MemMark}   & \best{0.2559} & \best{0.3197} & 0.4143 & 0.5248 & 0.1840 & 0.2922 & 0.4117 & 0.4434 & 0.1243 & 0.1114 & 0.3044 & 0.3504 \\
+  \cmidrule(l){2-15}
+    & \multirow{5}{*}{Graphiti} & \texttt{No-WM}     & 0.1276 & 0.1448 & \best{0.3659} & \best{0.4108} & 0.2616 & 0.2865 & 0.3436 & \best{0.3588} & 0.1249 & 0.1048 & 0.2560 & \best{0.2694} \\
+    &                         & \texttt{S.M.-Only} & 0.1286 & 0.1769 & 0.2836 & 0.2998 & 0.2060 & 0.2105 & 0.3109 & 0.3162 & \best{0.1626} & 0.1323 & 0.2346 & 0.2404 \\
+    &                         & \texttt{Ran.}      & \best{0.1653} & \best{0.1989} & 0.3575 & 0.4050 & 0.1775 & 0.1835 & \best{0.3585} & 0.3555 & 0.1266 & 0.1039 & \best{0.2606} & 0.2689 \\
+    &                         & \texttt{KGMARK}    & 0.1304 & 0.1807 & 0.3213 & 0.3482 & 0.1815 & 0.2707 & 0.3470 & 0.3493 & 0.1432 & \best{0.1361} & 0.2484 & 0.2665 \\
+    &                         & \textbf{MemMark}   & 0.1104 & 0.1366 & 0.3353 & 0.3579 & \best{0.2748} & \best{0.3334} & 0.3229 & 0.3330 & 0.1277 & 0.1176 & 0.2418 & 0.2552 \\
+  \bottomrule
+  \end{tabular}%
+  }
+  \caption{\textbf{RQ1 --- Utility preservation on \locomo}. Three models are stacked vertically. The abbreviated baseline labels in the table correspond to unwatermarked execution (\texttt{No-WM}), signed-metadata-only (\texttt{S.M.-Only}), random-selection control (\texttt{Ran.}), and \kgmark{} (\texttt{KGMARK}, Graphiti only); \textbf{MemMark} is the full method. Highlighted cells mark the best value per column within each (Model, Backend) block.}
+  \label{tab:main-results}
 \end{table*}

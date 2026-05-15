@@ -1,0 +1,32 @@
+% ============================================================
+% Appendix: baseline details
+% ============================================================
+\section{Details of Baselines}
+\label{app:baseline-details}
+
+This appendix clarifies the baseline definitions used in
+\S\ref{sec:setup} and Table~\ref{tab:main-results}.
+
+\paragraph{No-WM.}
+\texttt{No-WM} is the unwatermarked execution path. The memory backend,
+agent harness, and evaluation pipeline are identical to the
+\memmark{} runs; the only difference is that no attribution logic is
+applied during memory-state evolution.
+
+\paragraph{S.M.-Only.}
+\texttt{S.M.-Only} keeps the signed metadata and audit-sidecar
+machinery but removes keyed selection over admissible candidates. This
+control tests whether attribution can be explained by explicit metadata
+alone rather than by hidden state-evolution choices.
+
+\paragraph{Ran.}
+\texttt{Ran.} replaces keyed sampling with random selection among the
+same admissible candidates. It therefore controls for the possibility
+that any observed utility change is caused by multi-candidate
+enumeration itself rather than by the secret-keyed selection rule.
+
+\paragraph{KGMARK.}
+\texttt{KGMARK}~\cite{kgmark} is included only for \graphiti{}, where a
+knowledge-graph baseline is structurally meaningful. It is omitted for
+\amem{} because \amem{} does not expose graph-native edge operations of
+the kind assumed by \kgmark{}.

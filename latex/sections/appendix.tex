@@ -2,45 +2,86 @@
 % Appendix
 % ============================================================
 
-\input{sections/related_appendix}
+
 
 \section{Full Proofs}
 \label{app:proofs}
 
+This appendix collects the technical material that supports the main
+paper's central claims but would be too detailed for the main
+narrative. We begin with proof sketches for the sampler properties,
+then report the composability analysis, hyperparameter sensitivity, and
+per-conversation breakdowns referenced in the main text.
+
 \subsection{Proof of Lemma~\ref{lem:dist-preserve}}
-\todo{Standard binning argument. Integer-quantize $\probdist$ into
-$N$ buckets, cyclic-shift by PRF output, return bucket containing
-shift point. Marginal over $K$ uniform PRF output equals
-$\probdist$.}
+The key idea is the standard binning argument underlying
+distribution-preserving keyed selection. Integer-quantize
+$\probdist$ into $N$ buckets, apply a cyclic shift determined by a
+uniform PRF output, and return the candidate whose interval contains
+the shifted point. Marginalizing over the uniform shift recovers the
+original interval mass for every candidate, so the keyed pick has the
+same marginal distribution as $\probdist$.
 
 \subsection{Proof of Lemma~\ref{lem:cascade}}
-\todo{PRF independence: each $\nonceT$ comes from $\text{PRF}(K,
-\ctx)$ with $\ctx$ distinct per decision. Independence of keyed
-picks follows from PRF $\to$ random oracle in standard model.}
+Distinct internal decisions use distinct context strings and therefore
+distinct nonces $\nonceT = \mathrm{PRF}(K, \ctx)$. Under the standard
+PRF assumption, these nonces are computationally indistinguishable from
+independent random draws to an adversary without the key. The keyed
+picks across a cascade of LLM calls therefore behave independently for
+verification purposes, and the expected embedding capacity adds across
+valid decision points.
 
 \subsection{Proof of Lemma~\ref{lem:backend-invariant}}
-\todo{Corollary of Lemma~\ref{lem:dist-preserve}: backend doesn't
-appear in the marginal expression.}
+This is an immediate corollary of
+Lemma~\ref{lem:dist-preserve}. The marginal expression depends only on
+the candidate distribution $\probdist$ and the secret key $K$.
+Backend-specific implementation details affect how the candidate set is
+enumerated, but once $(\candset, \probdist, \ctx)$ is fixed, the
+sampling guarantee is backend-agnostic.
+
+\section{Metrics}
+\label{app:metrics}
+
+\input{latex/tables/metric_definitions}
+Table~\ref{tab:metric-defs} consolidates the definitions of all metrics
+used in this paper, grouped by the research question they address: utility
+(RQ1), watermark reliability (RQ2), capacity (RQ3), tamper detection (RQ4),
+and memory integrity (RQ5). For each metric we list its reporting unit and,
+where relevant, the carrier-level decomposition along
+$\carrier \in \{\text{update\_target},\ \text{link\_target},\
+\text{semantic\_realization}\}$. We refer the reader to this table
+throughout Sections~\ref{sec:rq1}--\ref{sec:rq5} for precise definitions.
+
 
 \section{Composability Experiment}
 \label{app:composability}
-\todo{Three configurations (memory-only / content-only / both) on
-\S\ref{sec:rq3} R1. Report (i) memory decode rate, (ii) content
-watermark detection, (iii) joint utility. See
-Table~\ref{tab:composability}.}
+We evaluate three configurations --- memory-only, content-only, and
+both --- under the R1 protocol of \S\ref{sec:rq3}. The purpose is to
+check whether memory-level attribution and output-level watermarking
+remain operational when deployed simultaneously. We report
+(i) memory decode rate, (ii) content watermark detection, and
+(iii) joint utility. Table~\ref{tab:composability} summarizes the
+comparison.
 
 \input{tables/composability}
 
 \section{Hyperparameter Sensitivity}
 \label{app:hyperparam}
-\todo{Sweep $K \in \{2, 4, 8\}$, $T_{\text{enum}} \in \{0.5, 0.7,
-1.0\}$. Report bits/decision and F1 deltas.}
+We sweep $K \in \{2, 4, 8\}$ and
+$T_{\text{enum}} \in \{0.5, 0.7, 1.0\}$ to quantify the trade-off
+between candidate diversity and embedding stability. We report realized
+bits per decision together with the corresponding utility deltas, so
+that the reader can see how much attribution capacity is obtained per
+unit of behavioral perturbation.
 
 \input{tables/hyperparam_sweep}
 
 \section{Per-Conversation Breakdown}
 \label{app:per-conv}
-\todo{All 10 \locomo{} conversations individually; appendix-only
-table.}
+Finally, we provide the per-conversation breakdown for all
+10 \locomo{} conversations. This table is included only in the
+appendix because its role is diagnostic rather than conceptual: it
+shows that the aggregate trends in the main text are not driven by a
+single conversation outlier.
 
 \input{tables/per_conversation}

@@ -5,28 +5,29 @@
 % ============================================================
 \begin{table*}[t]
 \centering
-\small
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{ll cccc cccc cccc}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llcccccccccccc}
 \toprule
 & & \multicolumn{4}{c}{Strength $0.1$} & \multicolumn{4}{c}{Strength $0.3$} & \multicolumn{4}{c}{Strength $0.5$} \\
 \cmidrule(lr){3-6}\cmidrule(lr){7-10}\cmidrule(lr){11-14}
 Category & Attack & {Recov.} & {ComF} & {MerF} & {Miss} & {Recov.} & {ComF} & {MerF} & {Miss} & {Recov.} & {ComF} & {MerF} & {Miss} \\
 \midrule
 \multirow{5}{*}{Content tamper}
-  & manual\_edits        & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} \\
-  & paraphrase\_rewrite  & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} \\
-  & edge\_relabel        & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} \\
-  & subgraph\_reanchor   & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} \\
-  & supersession         & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} \\
+  & manual\_edits        & 0.900&0.100&0&0 & 0.750&0.300&0&0 & 0.625&0.499&0&0 \\
+  & paraphrase\_rewrite  & 0.825&0.100&0&0 & 0.675&0.300&0&0 & 0.350&0.499&0&0 \\
+  & edge\_relabel        & 0.850&0.100&0&0 & 0.500&0.300&0&0 & 0.250&0.499&0&0 \\
+  & subgraph\_reanchor   & 0.900&0.100&0&0 & 0.600&0.300&0&0 & 0.250&0.499&0&0 \\
+  & supersession         & 0.975&0.100&0&0 & 0.775&0.300&0&0 & 0.525&0.499&0&0 \\
 \midrule
 \multirow{4}{*}{Structural}
-  & compaction           & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} \\
-  & pruning              & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} \\
-  & dedup                & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} \\
-  & poisoning            & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} & \todo{}&\todo{}&\todo{}&\todo{} \\
+  & compaction           & 0.900&0.100&0&0 & 0.775&0.300&0&0 & 0.525&0.499&0&0 \\
+  & pruning              & 1.000&0&0&0.100 & 1.000&0&0&0.300 & 1.000&0&0&0.500 \\
+  & dedup                & 1.000&0&0&0.005 & 1.000&0&0&0.045 & 1.000&0&0&0.124 \\
+  & poisoning            & 0.909&0.091&0&0 & 0.816&0.231&0&0 & 0.741&0.333&0&0 \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \caption{\textbf{RQ4 — Robustness against 9 memory-specific attacks
 $\times$ 3 strengths $(0.1, 0.3, 0.5)$}. \textbf{Recov.}{=}post-attack
 \texttt{bit\_recovery\_rate}; \textbf{ComF}{=}\texttt{commitment\_fail\_rate}

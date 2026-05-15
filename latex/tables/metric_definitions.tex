@@ -1,43 +1,122 @@
 % ============================================================
 % Table: Metric definitions (README §9.2)
 % ============================================================
-\begin{table}[t]
+\begin{table*}[t]
 \centering
 \small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{p{0.22\linewidth}p{0.72\linewidth}}
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{p{0.17\linewidth}p{0.29\linewidth}p{0.46\linewidth}}
 \toprule
-Category & Metrics \\
+Category & Metric & Definition / Reporting Unit \\
 \midrule
-Utility (per-benchmark)
-  & \locomo{}: F1 / BLEU-1 / ROUGE-L (\amem{}
-    \texttt{utils.py:calculate\_metrics}, set-based, no stemming).
-    \longmemeval{}: question-type accuracy, knowledge-update
-    correctness, temporal-reasoning correctness, abstention quality.
-    \mab{}: accurate retrieval (EventQA), test-time learning,
-    long-range understanding, selective forgetting
-    (FactConsolidation). \\
-Watermark
-  & bit recovery rate, decode success rate, false-positive rate
-    (FPR), wrong-key acceptance rate, per-turn / per-session
-    capacity. \\
-Capacity (memory-aware)
-  & bits per memory decision, bits per session, bits per benchmark
-    episode, bits per 100 conversation turns, average bits per
-    memory write. \\
-Carrier-level
-  & all the above reported per $\carrier \in
-    \{\text{update\_target},\text{link\_target},\text{semantic\_realization}\}$. \\
+
+Utility
+  & \locomo{} F1
+  & Set-based answer overlap used by \amem{} for paper-comparability:
+    precision and recall are computed over predicted versus gold answer
+    items, and combined as their harmonic mean. \\
+
+  & BLEU-1
+  & Unigram precision between the generated answer and the reference
+    answer, measuring lexical overlap at the token level. \\
+
+  & ROUGE-L
+  & Longest-common-subsequence recall-oriented overlap between the
+    generated answer and the reference answer, measuring whether the
+    generated answer preserves the reference content order. \\
+
+\midrule
+
+Watermark reliability
+  & Bit recovery rate
+  & Fraction of embedded watermark bits correctly recovered from the
+    decoded memory trace. \\
+
+  & Decode success rate
+  & Fraction of sessions in which the complete embedded watermark message
+    is decoded correctly. \\
+
+  & False-positive rate (FPR)
+  & Fraction of unwatermarked sessions incorrectly accepted as carrying a
+    valid watermark. \\
+
+  & Wrong-key acceptance rate
+  & Fraction of sessions decoded with an incorrect key that are incorrectly
+    accepted as valid. \\
+
+\midrule
+
+Capacity
+  & Bits per memory decision
+  & Average number of recoverable watermark bits carried by one write,
+    update, delete, link, or merge decision. \\
+
+  & Bits per session
+  & Total recoverable watermark capacity within one complete conversation
+    session. \\
+
+  & Bits per benchmark episode
+  & Total recoverable watermark capacity within one benchmark instance. \\
+
+  & Bits per 100 conversation turns
+  & Normalized capacity over long-horizon conversations, reported per
+    100 turns. \\
+
+  & Average bits per memory write
+  & Average number of recoverable bits carried by each committed memory
+    write. \\
+
+\midrule
+
+Carrier-level analysis
+  & Per-carrier reliability and capacity
+  & All watermark reliability and capacity metrics are additionally
+    reported for each carrier:
+    $\carrier \in
+    \{\text{update\_target}, \text{link\_target},
+    \text{semantic\_realization}\}$. \\
+
+\midrule
+
 Tamper detection
-  & commitment / Merkle proof verification fail rate
-    (per-attack, \S\ref{sec:rq4}). \\
+  & Commitment verification fail rate
+  & Fraction of tampered memory records whose commitment verification
+    fails under the anchored commitment root. Reported per attack type
+    in \S\ref{sec:rq4}. \\
+
+  & Merkle proof verification fail rate
+  & Fraction of tampered memory records whose Merkle inclusion proof fails
+    against the anchored Merkle root. Reported per attack type in
+    \S\ref{sec:rq4}. \\
+
+\midrule
+
 Memory integrity
-  & overall snapshot size, per-$\carrier$ carrier-distribution,
-    QA-time evidence-grounded retrieval recall, write\_failures. \\
+  & Snapshot size
+  & Total size of the memory snapshot after watermarking and commitment
+    construction. \\
+
+  & Carrier distribution
+  & Distribution of embedded bits across carriers, reported overall and
+    per $\carrier$. \\
+
+  & Evidence-grounded retrieval recall
+  & Fraction of QA-time gold evidence records successfully retrieved from
+    memory. \\
+
+  & Write failures
+  & Number or fraction of attempted memory writes that fail validation,
+    storage, or commitment construction. \\
+
 \bottomrule
 \end{tabular}
-\caption{Metric definitions across the five RQs. Numbers below
-follow these definitions exactly; F1 in particular uses
-\amem{}'s set-based formula for paper-comparability.}
+\caption{Metric definitions across the five research questions. Utility
+metrics measure answer quality on \locomo{}; watermark metrics measure
+decodability, reliability, and security; capacity metrics quantify how many
+bits can be carried by memory operations; carrier-level metrics decompose
+performance by watermark carrier; tamper-detection metrics measure whether
+memory modifications are caught by commitment and Merkle verification; and
+memory-integrity metrics measure the operational side effects of watermarking.
+For paper-comparability, F1 follows \amem{}'s set-based formula.}
 \label{tab:metric-defs}
-\end{table}
+\end{table*}

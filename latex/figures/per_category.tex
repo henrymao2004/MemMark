@@ -1,19 +1,12 @@
 % ============================================================
-% Figure: Per-category F1 bar chart (RQ1)
-% Placeholder — replace with TikZ/pgfplots once real numbers
-% are available. Use a TODO note inside an empty figure box.
+% Figure: Table 4 overall F1 grouped bar chart (RQ1)
 % ============================================================
 \begin{figure}[t]
 \centering
-\fbox{\parbox{0.95\linewidth}{\centering\todo{Per-category F1 bar chart
-(5 \locomo{} categories on x-axis, 4 baselines as bar groups, F1
-on y-axis). Use pgfplots; one panel per backend. Highlight that
-cat-2 (temporal) and cat-3 (multi-hop) where \memmark{} should
-match \texttt{no-watermark} closely; cat-5 (adversarial) shows
-the post-loader-fix recovery.}\\[6pt] \vspace{4cm}}}
-\caption{\textbf{Per-category F1 across baselines}. Confirms that
-\memmark{} preserves utility uniformly across the five \locomo{}
-QA categories; gap to \texttt{signed-metadata-only} on every
-category measures marginal value of keyed embedding.}
+\includegraphics[width=\linewidth]{figures/per_category.png}
+\caption{\textbf{Overall F1 across baselines}. Grouped bars report
+\locomo{} overall F1 from Table~\ref{tab:main-results} for each
+\amem{}/\graphiti{} backend--LLM combination. Hatched bars denote
+missing entries.}
 \label{fig:per-category}
 \end{figure}

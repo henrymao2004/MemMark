@@ -3,17 +3,17 @@
 % ============================================================
 \begin{table}[t]
 \centering
-\small
-\setlength{\tabcolsep}{4pt}
+\scriptsize
+\resizebox{0.92\columnwidth}{!}{%
 \begin{tabular}{lcccc}
 \toprule
 Method & Records & Carrier Dist. & Ev. Recall & Write Fail \\
 \midrule
 \multicolumn{5}{l}{\emph{\amem{} backend}} \\
-\quad \texttt{no-watermark}         & \todo{} & \todo{} & \todo{} & \todo{} \\
-\quad \texttt{signed-metadata-only} & \todo{} & \todo{} & \todo{} & \todo{} \\
-\quad \texttt{random-replace}       & \todo{} & \todo{} & \todo{} & \todo{} \\
-\quad \textbf{\memmark}             & \todo{} & \todo{} & \todo{} & \todo{} \\
+\quad \texttt{no-watermark}         & 419 & 122:298:421 & 0.660 & 4 \\
+\quad \texttt{signed-metadata-only} & 419 & 156:262:424 & 0.552 & 4 \\
+\quad \texttt{random-replace}       & 419 & 146:262:429 & 0.563 & 3 \\
+\quad \textbf{\memmark}             & 419 & 213:200:426 & 0.585 & 4 \\
 \midrule
 \multicolumn{5}{l}{\emph{\graphiti{} backend}} \\
 \quad \texttt{no-watermark}         & \todo{} & \todo{} & \todo{} & \todo{} \\
@@ -21,7 +21,8 @@ Method & Records & Carrier Dist. & Ev. Recall & Write Fail \\
 \quad \texttt{random-replace}       & \todo{} & \todo{} & \todo{} & \todo{} \\
 \quad \textbf{\memmark}             & \todo{} & \todo{} & \todo{} & \todo{} \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \caption{\textbf{RQ5 — Memory integrity (LoCoMo-computable signals
 only)}. \textbf{Records}{=}snapshot size; \textbf{Carrier
 Dist.}{=}per-$\carrier$ decision count ratio (update : link :

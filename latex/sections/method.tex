@@ -1,110 +1,273 @@
-% ============================================================
-% Method — README §3, §6, §7, §8
-%   3.1 Problem formalization + carrier taxonomy (§3.2)
-%   3.2 LLM-call boundary interception (§6.1)
-%   3.3 Self-reported candidate sampling (§6.2 / §6.3)
-%   3.4 Cryptographic audit trace (§8)
-% ============================================================
-\section{Method}
-\label{sec:method}
 
-% ---------- pipeline figure ----------
+% ============================================================
+\section{Problem Formulation}
+\label{sec:problem}
+% ============================================================
+
+% ---------- 3.1 ----------
+\subsection{Preliminaries and Notation}
+\label{sec:problem-prelim}
+We consider a long-term memory backend that evolves over $T$ turns.
+At each turn $t\in\{1,\ldots,T\}$ the backend receives an incoming event
+$e_t$ and the current snapshot $M_t$, and produces an updated snapshot
+$M_{t+1}$. Crucially, this transition is not monolithic: it is realized
+through one or more latent state-evolution choices that are semantically
+admissible yet not uniquely determined.
+
+We formalize each such choice as a memory-evolution decision
+\begin{equation}
+\mathrm{decision}_{t} = \langle \mathrm{carrier}_{t},\ \mathrm{candset}_{t},\ \mathrm{probdist}_{t},\ \mathrm{ctx}_{t} \rangle
+\end{equation}
+where $\carrier_t$ is the type of state-transition freedom (carrier),
+$\candset_{t}=\{c_{t}^{1},\ldots,c_{t}^{k_{t}}\}$ is the candidate set,
+$\probdist_t\in\Delta(\candset_t)$ is the backend's preference distribution
+over $\candset_t$, and $\ctx_t$ is the decision context that the embedder
+and verifier can both reconstruct.
+
+We assume the backend induces a latent preference distribution
+$\probdist_t^\star$ over $\candset_t$, and that the baseline backend would
+commit a candidate $c_t\sim\probdist_t^\star$. In our setting we elicit an
+explicit estimate $\probdist_t$ of $\probdist_t^\star$ from the model's
+self-reported weights, and define distribution preservation with respect
+to $\probdist_t$. To avoid shifting the backend's writing policy we require
+per-decision distribution preservation:
+\begin{equation}
+\hat c_t \sim \probdist_t \quad \text{for all } t\in\{1,\ldots,T\}.
+\end{equation}
+
+\paragraph{Decision--commit separation.}
+\memmark{} observes and modifies only $(\candset_t, \probdist_t, \ctx_t)$;
+candidate generation and the commit step
+$\textsc{apply\_selected}(M_t,\hat c_t)\to M_{t+1}$ remain on the native
+backend path. The watermark therefore does not manipulate write operations
+themselves, only the selection that feeds into them.
+
+% ---------- 3.2 ----------
+\subsection{Memory-Evolution Channel and Distribution-Preserving Coding}
+\label{sec:problem-channel}
+We model the backend's decision stage as sampling from a time-varying
+discrete channel. At each decision point $t$, the channel is characterized
+by the latent preference distribution $\probdist_t^\star$ over $\candset_t$.
+An unwatermarked backend would commit an implicit choice
+$c_t\sim\probdist_t^\star$. To embed a provenance payload, the watermarked
+backend replaces native sampling with a distribution-preserving encoder:
+\begin{equation}
+\hat c_t \leftarrow \mathsf{Enc}(\probdist_t, r_t)\in\candset_t,
+\end{equation}
+where $r_t$ denotes shared per-decision sampling randomness. The embedder
+and verifier share a secret key $K$ so that the verifier can reproduce
+$r_t$ from logged context.
+
+\paragraph{Keyed pseudorandomness.}
+Per-decision randomness is derived from $K$ and the decision context as
+\begin{equation}
+\nonceT \leftarrow \mathrm{PRF}(K,\ \ctx_t),
+\end{equation}
+and a pseudorandom generator seeded by $\nonceT$ produces the sampling
+stream consumed by $\mathsf{Enc}$. Because $\ctx_t$ is reconstructible from
+the surviving record, the verifier replays the same keyed pick at
+verification time.
+
+% ---------- 3.3 ----------
+\subsection{Threat Model}
+\label{sec:problem-threat}
+We consider provenance verification for long-term memory backends, where
+the watermark is embedded at write time but verified later, possibly after
+the backend has undergone structural modifications and after the external
+audit log has been partially or fully lost.
+
+\paragraph{Structural attacks on the backend.}
+A long-term memory store is routinely subject to poisoning and
+compaction~\cite{chen2024agentpoison,amemguard,memorygraft}. These
+operations remove, merge, or rewrite individual records but cannot,
+without $K$, forge a commitment that opens consistently against the
+anchored Merkle root. We accordingly model the dominant attack effect as
+removing a subset of leaves rather than fabricating valid ones. Let
+$\mathcal{I}\subseteq\{1,\ldots,T\}$ denote the index set of decisions
+whose records survive.
+
+\paragraph{Verification regimes.}
+We consider three regimes reflecting realistic deployments:
+\begin{itemize}
+  \item \textbf{R1 (full external log):} the verifier holds all
+  per-decision commitments and the complete Merkle tree.
+  \item \textbf{R2 (partial external log):} only a subset $\mathcal{I}$ of
+  commitments survives, due to truncation, retention limits, or partial
+  loss.
+  \item \textbf{R3 (snapshot only):} the external log is unavailable;
+  verification relies on the memory snapshot plus an in-record sidecar
+  carrying reveal data and the anchored header.
+\end{itemize}
+
+% ---------- 3.4 ----------
+\subsection{Objectives}
+\label{sec:problem-objectives}
+We formalize two objectives, with per-decision distribution preservation
+$\hat c_t\sim\probdist_t$ enforced as a hard constraint that supports
+utility preservation.
+
+\paragraph{Utility preservation.}
+Watermarking should not degrade the backend's memory quality on
+downstream memory-conditioned tasks. Writing $M_T$ and $\hat M_T$ for the
+baseline and watermarked snapshots after $T$ turns, we require
+\begin{equation}
+\Big|\mathbb{E}[\mathcal{U}(\hat M_T)] - \mathbb{E}[\mathcal{U}(M_T)]\Big|
+\le \varepsilon_{\mathcal{U}},
+\end{equation}
+where $\mathcal{U}(\cdot)$ denotes any downstream utility metric of the
+memory backend. This objective motivates restricting carriers to choices
+whose candidates are semantically equivalent.
+
+\paragraph{Robust attribution.}
+Under the three regimes, the verifier should recover the provenance signal
+whenever a sufficient subset of decisions survives. In R1 and R2, given
+surviving index set $\mathcal{I}$, we require
+\begin{equation}
+\Pr\!\left[\mathsf{Verify}\big(\{\hat c_t,\probdist_t,\ctx_t\}_{t\in\mathcal{I}};\ K\big)=1\right]
+\ge 1-\delta(|\mathcal{I}|),
+\end{equation}
+with the failure probability $\delta(|\mathcal{I}|)$ decaying smoothly as
+$|\mathcal{I}|$ grows. In R3, the same guarantee is required against the
+in-record sidecar instead of the external commitments.
+
+
+% ============================================================
+\section{MemMark}
+\label{sec:method}
+% ============================================================
 \input{figures/pipeline}
 
-% ============================================================
-\subsection{Problem Formalization and Carrier Taxonomy}
-\label{sec:method-formal}
-% ============================================================
-\todo{Define memory state $M_t$, incoming event $e_t$, evolve
-decision $\decision = \langle \carrier, \candset, \probdist, \ctx
-\rangle$ with $\carrier \in \{\text{update}, \text{link},
-\text{semantic}\}$. State the backend-invariance: \memmark{} reads
-only $(\candset, \probdist, \ctx)$, never touches backend internals.
-Match \S3.2 of the README. Include a table summarizing the three
-carriers across \amem{} / \graphiti{}.}
+\subsection{Overview}
+\label{sec:method-overview}
+Figure~\ref{fig:pipeline} illustrates \memmark{} in a memory backend.
+\memmark{} operates at the decision layer defined in
+Section~\ref{sec:problem-prelim} and is organized into three components:
+a carrier taxonomy with a backend adapter
+(Section~\ref{sec:method-carrier}) that exposes decision points uniformly
+across backends; a distribution-preserving sampler
+(Section~\ref{sec:method-sampler}) that performs the keyed pick; and a
+cryptographic audit trace (Section~\ref{sec:method-audit}) that supports
+verification under R1--R3.
 
+
+% ---------- 4.2 carrier taxonomy + adapter ----------
+\subsection{Carrier Taxonomy and Backend Adapter}
+\label{sec:method-carrier}
 \input{tables/carrier_taxonomy}
 
-\todo{Then list the minimum adapter signature
-($\texttt{enumerate\_candidates}$, $\texttt{score\_candidates}$,
-$\texttt{apply\_selected}$) and the per-carrier reportable quantities
-($|\candset|$, $H(\probdist)$, acceptance rate).}
+Table~\ref{tab:carrier-taxonomy} lists our three carriers. The
+update-target carrier changes which existing object is modified; the
+link-target carrier changes which prior object is connected to new
+evidence; and the semantic-realization carrier changes the surface form
+encoding the same fact. Each captures genuine decision freedom in both
+backends while satisfying the semantic-equivalence requirement of
+Section~\ref{sec:problem-objectives}.
 
-% ============================================================
-\subsection{LLM-Call Boundary Interception}
-\label{sec:method-interception}
-% ============================================================
-\todo{Key observation: each SDK-internal LLM call is itself an
-$\varepsilon$-equivalent decision point at $T{=}0.7$. We hot-swap
-the SDK's LLM client with a wrapper (\amem{}: replace
-\texttt{AgenticMemorySystem.llm\_controller}; \graphiti{}: replace
-\texttt{Graphiti.llm\_client}). Wrapper appends an \agentmark-style
-instruction to the SDK's prompt asking the LLM to enumerate $K$
-alternatives with self-reported weights in a single call. The wrapper
-parses, runs keyed pick via the binning sampler, returns the chosen
-decision in the SDK's expected schema. Backend doesn't know.}
+Connecting a backend to \memmark{} requires only a minimal adapter with
+three hooks:
+\textsc{enumerate\_candidates}$(M_t,e_t,\carrier)\to\candset$,
+\textsc{score\_candidates}$(\candset,\ctx)\to\probdist$, and
+\textsc{apply\_selected}$(M_t,c^*)\to M_{t+1}$. They expose the choice
+space, rank it, and commit the selection. The same abstraction yields the
+carrier-level quantities reported throughout the paper: average set size
+$|\candset|$, entropy $H(\probdist)$, and acceptance rate (fraction of
+points with $|\candset|\ge 2$). Because the adapter is the only
+backend-specific code path, a single watermarking layer operates over
+structurally distinct systems such as \amem{} and \graphiti{}.
 
-% prompt template figure
-\input{figures/prompt_template}
 
-% ============================================================
-\subsection{Self-Reported Candidate Sampling}
+% ---------- 4.3 sampler ----------
+\subsection{Distribution-Preserving Behavioral Watermark}
 \label{sec:method-sampler}
-% ============================================================
-\todo{Parse JSON into $(\text{decisions}, \text{weights})$, normalize
-weights to $\probdist$, feed to \agentmark's binning sampler with
-keyed context $\ctx \| \nonceT$ where $\nonceT = \text{PRF}(K,
-\ctx)$. The sampler returns the keyed pick $c^*$ and embedded bits.
-Algorithm \ref{alg:sample} sketches the per-call flow.}
 
-\input{figures/algorithm_sample}
+\paragraph{Boundary interception.}
+Each internal LLM call in the backend already constitutes an
+$\varepsilon$-equivalent decision point: under standard decoding, the
+backend would accept several nearby alternatives without altering the
+semantic role of the write. \memmark{} therefore takes this LLM-call
+boundary as its uniform intervention point across backends. At each call,
+the prompt is extended to request $K$ plausible answers with self-reported
+preference weights, so a single sampled output is replaced by an explicit
+candidate set. The backend then receives one final response and remains
+agnostic to the watermark's presence. In effect, open-vocabulary
+structured generation is recast as a finite, distribution-bearing choice
+that can be keyed, audited, and replayed.
 
-\paragraph{Properties.} \todo{State Lemma 1 (strict
-distribution preservation), Lemma 2 (composition across the cascade),
-Lemma 3 (backend-invariant marginal). Full proofs in
-Appendix~\ref{app:proofs}.}
+\paragraph{Self-reported candidate elicitation.}
+Parsing the wrapper response yields a decision list
+$\{d_t^1,\ldots,d_t^K\}$ with normalized weights, which induce the
+explicit distribution $\probdist_t$ over the candidate support. This
+reduces open-vocabulary generation to a discrete selection that a keyed
+sampler can consume. 
+
+\paragraph{Keyed distribution-preserving sampling.}
+\memmark{} feeds $(\candset_t,\probdist_t,\ctx_t)$ to a
+distribution-preserving binning sampler keyed by the secret $K$ and the
+context-bound nonce $\nonceT$ from Section~\ref{sec:problem-channel}. The
+sampler returns the selected candidate $\hat c_t$ together with the
+number of embedded bits, while preserving the marginal:
+\begin{equation}
+\Pr[\hat c_t=c\mid \probdist_t,K]=\probdist_t(c),\quad \forall c\in\candset_t.
+\end{equation}
+
+
+\paragraph{Properties.}
+The sampler provides the following guarantees; proofs are deferred to
+Appendix~\ref{app:proofs}.
 
 \begin{lemma}[Strict distribution preservation]
 \label{lem:dist-preserve}
-\todo{Given $\probdist$, the keyed pick $c^*$ under PRF key $K$ has
-marginal distribution equal to $\probdist$: $\Pr[c^* = c_i \mid K,
-\ctx]_{\mathrm{marg}} = \probdist(c_i)$.}
+For any valid $\probdist_t$, the keyed pick $\hat c_t$ satisfies
+$\Pr[\hat c_t=c^i\mid K,\ctx_t]_{\mathrm{marg}}=\probdist_t(c^i)$.
+Because this marginal depends only on $\probdist_t$ and $K$, it holds
+identically regardless of which backend produced $\candset_t$.
 \end{lemma}
 
 \begin{lemma}[Cascade composition]
 \label{lem:cascade}
-\todo{$K$ LLM calls within a memory event yield independent keyed
-picks. Capacity is additive in $K$, marginal bias does not
-accumulate.}
+Keyed picks across multiple calls of a single event are independent
+under distinct context-derived nonces, so expected embedding capacity
+grows approximately additively in the number of valid decisions.
 \end{lemma}
 
-\begin{lemma}[Backend-invariant marginal]
-\label{lem:backend-invariant}
-\todo{Lemma \ref{lem:dist-preserve} depends only on $\probdist$ and
-$K$, not the backend.}
-\end{lemma}
 
-% ============================================================
+% ---------- 4.4 audit trace ----------
 \subsection{Cryptographic Audit Trace}
 \label{sec:method-audit}
-% ============================================================
-\todo{Three-layer design: per-decision commitment, per-session
-Merkle log, signed root anchor written into the snapshot itself.
-$\commit = H(\ctx \| H(\candset) \| H(\probdist) \| \text{selected}
-\| \text{bits} \| \nonceT)$. $\header_T = (\text{agent\_id},
-\text{user\_id}, \text{session\_id}, T, \text{root}_T,
-\text{sig}_K(\text{root}_T))$.}
+To support forensic attribution beyond the original execution
+environment, \memmark{} records a three-layer cryptographic trace that
+serves the three regimes of Section~\ref{sec:problem-threat}.
+
+\paragraph{Per-decision commitments.}
+Each sampled decision produces a commitment
+\[
+\begin{aligned}
+\commit_t = H\big(\,
+& \ctx_t \,\|\, H(\candset_t) \,\|\, H(\probdist_t) \,\|\, \\
+& \hat c_t \,\|\, \text{bits}_t \,\|\, \nonceT \,\big),
+\end{aligned}
+\]
+with $H$ collision-resistant and inputs canonically serialized.
+
+\paragraph{Per-session Merkle tree and signed anchor.}
+The per-decision commitments in a session form a Merkle tree whose root
+is sealed in a signed anchor
+\[
+\begin{aligned}
+\header = (\,&\text{agent\_id},\ \text{user\_id},\ \text{session\_id},\ T,\\
+            &\text{root}_T,\ \mathrm{sig}_K(\text{root}_T)),
+\end{aligned}
+\]
+making the trace append-only and tamper-evident.
 
 \paragraph{Per-leaf inclusion proofs.}
-\todo{Each \texttt{AuditRecord} stores its Merkle inclusion path at
-seal time so the verifier can check each leaf independently against
-$\text{root}_T$ — no rebuilt-root match required. This gives smooth
-bit-recovery under structural attacks (pruning / dedup / poisoning),
-in contrast to rebuilt-root verification which binary-collapses when
-the leaf set changes (see Table~\ref{tab:robustness}).}
+Each record carries its Merkle inclusion path at seal time, so a surviving
+leaf can be checked directly against the anchored root without rebuilding
+the log. This prevents structural attacks from collapsing verification
+into an all-or-nothing rebuilt-root test.
 
-\paragraph{Verification regimes.}
-\todo{Define R1 (full external log), R2 (partial external log), R3
-(snapshot only). Forward to \S\ref{sec:rq3} for the empirical
-hierarchy and to Table~\ref{tab:verification} for the regime
-matrix.}
+\paragraph{Verification dispatch.}
+Given a surviving leaf set, the verifier dispatches to the regime of
+Section~\ref{sec:problem-threat}: full-root reconstruction (R1), per-leaf
+inclusion checks against the anchored root (R2), or sidecar-against-snapshot
+validation (R3).

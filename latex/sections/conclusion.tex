@@ -4,12 +4,16 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-\todo{\memmark{} is a watermark for long-term agent memory
-systems that embeds attribution into the memory backend's own
-latent evolve decisions. Across \amem{} and \graphiti{} on
-\locomo{} we report three findings: utility is preserved within
-statistical noise of the unwatermarked baseline (RQ1); snapshot-only
-attribution succeeds at bit\_recovery $= 1.00$ versus $0$ for a
-signed-metadata baseline (RQ3, headline); the watermark stays
-robust under nine memory-lifecycle attacks (RQ4). Code, audit
-traces, and benchmarks are released.}
+\memmark{} shows that long-term agent memory can be watermarked at the
+level where the memory backend decides how state evolves, rather than
+at the level of visible actions or final text. Across \amem{} and
+\graphiti{} on \locomo{}, the method preserves utility within
+statistical noise of the unwatermarked baseline, achieves full
+snapshot-only attribution in the R3 setting, and remains
+robust under a broad set of memory-lifecycle attacks. Taken together,
+these results suggest that attribution for memory systems is feasible
+without sacrificing the utility that makes memory worth using in the
+first place.
+
+Code, audit traces, and benchmarks are released.
+

@@ -17,44 +17,77 @@
 % ============================================================
 \section{Experiments}
 \label{sec:exp}
+Our experiments are organized around five research questions that
+together test whether \memmark{} delivers attribution without
+compromising the underlying memory system. \textbf{RQ1} asks whether
+watermarking preserves downstream task utility, since every attribution
+claim is meaningful only if memory still works. \textbf{RQ2} asks
+whether memory evolution carries enough entropy to embed a non-trivial
+payload in the first place. \textbf{RQ3} asks whether attribution survives in the snapshot-only setting where
+the external action log is unavailable: the regime that matters most
+when memory is leaked, distilled, or migrated. \textbf{RQ4} stress-tests
+the watermark against nine memory-lifecycle attacks spanning content
+rewrites and structural perturbations. \textbf{RQ5} asks whether
+watermarking introduces latent damage to the memory lifecycle itself,
+beyond what end-task metrics reveal. We defer a sixth question on
+composability with output-layer watermarks to
+Appendix~\ref{app:composability}. We begin by describing the
+experimental setup shared across all five questions.
 
 % ============================================================
 \subsection{Setup}
 \label{sec:setup}
 % ============================================================
-\todo{Backends: \amem{} (agentic notes) and \graphiti{} (temporal
-graph). Each via \S\ref{sec:method-formal}'s minimal adapter, no
-agent harness. LLMs: \textsc{DeepSeek v4 Pro} (headline + cost) and
-\textsc{Qwen3.5-397B-A17B} (open weights + reproducibility), both
-OpenAI-compatible, $T_{\text{enum}}{=}0.7$, $T_{\text{score}}{=}0.0$,
-JSON mode on. Benchmarks: \locomo{} / \longmemeval{} / \mab{}. F1
-follows \amem{} \texttt{utils.py:135--145} set-based formula for
-paper-comparability to \amem{} Table 1. $\geq 3$ seeds per
-(backend, LLM, benchmark) triple.}
+\paragraph{Backends \& Models.}
+Our evaluation spans two memory backends: \amem{} \cite{amem}, an agentic note-centric memory system with structured memory notes, dynamic indexing, inter-memory linking, and memory evolution, and \graphiti{} \cite{graphiti}, a temporal graph-based memory system that tracks evolving entities, relations, provenance, and time-aware updates. For model backbones, we use three LLMs: DeepSeek-V4-Pro \cite{deepseekai2026deepseekv4}, 
+Qwen3.6-flash \cite{qwen36_35b_a3b} and GLM-5.1 \cite{glm5team2026glm5vibecodingagentic}. Candidate enumeration uses
+$T_{\text{enum}}{=}0.7$, candidate scoring uses
+$T_{\text{score}}{=}0.0$, and JSON mode is enabled throughout.
 
-\paragraph{Baselines.} \todo{(1) \texttt{no-watermark} — upper
-utility bound. (2) \texttt{random-replace} — FPR / wrong-key floor.
-(3) \texttt{signed-metadata-only} — same audit trace, no keyed bit
-embedding; isolates marginal value of watermark over pure metadata
-in R3. (4) \kgmark{} @ \graphiti{} — direct KG baseline (N/A on
-\amem). (5) Action-layer watermark @ ToolBench — cross-layer R1/R2/R3
-comparison.}
+\paragraph{Benchmark.}
+We evaluate on the \locomo{} benchmark \cite{maharana-etal-2024-evaluating} which is a standard testbed for long-term conversational memory consisting of ten multi-session dialogues with QA and event-summarization annotations across five reasoning categories (single-hop, multi-hop, temporal, commonsense, adversarial).
 
-% Metric definitions table
-\input{tables/metric_definitions}
+
+\paragraph{Baselines.}
+We compare against five baselines chosen to isolate different parts of
+the claim. \texttt{no-watermark} gives the utility upper bound.
+\texttt{random-replace} measures the false-positive and wrong-key
+floor by replacing candidates without a secret key.
+\texttt{signed-metadata-only} keeps the audit trace and signed anchors
+but disables keyed embedding, thereby isolating the marginal value of
+the watermark over provenance metadata alone in the R3 setting.
+We also adopt \kgmark{} \cite{kgmark} which is the direct structured-memory baseline on \graphiti{}. 
+
+\paragraph{Metrics.}
+We evaluate along five axes, aligned with RQ1--RQ5; full definitions are in Appendix~\ref{app:metrics} (Table~\ref{tab:metric-defs}). For \emph{utility preservation} (RQ1) we report \locomo{} F1 and BLEU-1. For \emph{capacity} (RQ2) we report bits per memory decision, per session, per benchmark episode, per 100 conversation turns, and average bits per committed write. For \emph{in-record/snapshot-only verification} (RQ3) we report bit recovery rate, full-message decode success rate, FPR on unwatermarked sessions, and wrong-key acceptance rate across the R1/R2/R3 regime hierarchy. For \emph{robustness against nine memory-lifecycle attacks} (RQ4) we report pre- and post-attack bit recovery, commitment and Merkle-proof verification failure rates, and missing-leaves rate, all per attack type and strength. For \emph{memory integrity} (RQ5) we report snapshot size, carrier distribution, QA-time evidence-grounded retrieval recall, and write-failure rate. All reliability and capacity metrics are additionally broken down by carrier $\carrier \in \{\text{update\_target}, \text{link\_target}, \text{semantic\_realization}\}$.
+
+
 
 % ============================================================
 \subsection{RQ1 — Utility Preservation}
 \label{sec:rq1}
 % ============================================================
-\todo{Question: does watermark embedding break memory system
-utility? Setup: \texttt{no-watermark} vs \texttt{+ watermark} on F1
-/ BLEU-1 / ROUGE-L across two LLMs and two backends. Result: F1
-deltas fall within statistical noise of the unwatermarked baseline
-and have inconsistent sign across LLMs, consistent with
-Lemma~\ref{lem:dist-preserve}'s per-decision distribution-preservation
-guarantee; \texttt{signed-metadata-only} matches \texttt{no-watermark}
-F1, confirming the audit-trace machinery itself is utility-neutral.}
+Utility preservation is the first requirement for any practical memory
+watermark. Table~\ref{tab:main-results} therefore compares \memmark{}
+with unwatermarked execution and the ablated controls on \locomo{}
+across the two backends.
+
+The main pattern is that \memmark{} does not induce uniform utility
+collapse and remains competitive with the non-watermarked and ablated
+controls. On \amem{}, it improves over \texttt{No-WM} for
+\textsc{Qwen3-6-Flash} ($0.2850 \rightarrow 0.3044$ overall F1) and
+\textsc{GLM-5} ($0.2958 \rightarrow 0.3181$), while remaining in the
+same range as the stronger controls for \textsc{DeepSeek-V4-Pro}. On
+\graphiti{}, the picture is more mixed: \memmark{} is not uniformly
+best, but it stays within the same overall operating regime as the
+comparison methods rather than failing sharply.
+
+Figure~\ref{fig:per-category} summarizes the overall F1 comparison
+across backend--model settings and shows that the resulting trade-off
+is modest relative to the spread among baselines. Overall, these
+results suggest that memory-level attribution can be added without
+severe degradation in downstream QA quality, although the precise
+utility trade-off remains backend-dependent.
 
 \input{tables/main_results}
 \input{figures/per_category}
@@ -63,98 +96,140 @@ F1, confirming the audit-trace machinery itself is utility-neutral.}
 \subsection{RQ2 — Capacity}
 \label{sec:rq2}
 % ============================================================
-\todo{Question: how many bits can the memory evolve decisions carry?
-Report (i) avg $|\candset|$ and $H(\probdist)$ per carrier
-(theoretical upper bound), (ii) bits per decision / session /
-episode (actual), (iii) bits per 100 conversation turns. Addresses
-the reviewer attack ``prompted enumeration $\neq$ intrinsic
-decision freedom'' by showing per-backend $H(\probdist)$
-distributions are non-trivially above zero (mean
-$\approx 1.07$ vs the $\log_2 K \approx 1.58$ ceiling for $K{=}3$).}
+
 
 \input{tables/capacity}
 \input{figures/entropy_histogram}
 
 % ============================================================
-\subsection{RQ3 — Snapshot-Only / Partial-Log Verification (Headline)}
+\subsection{RQ3 — Snapshot-Only / Partial-Log Verification}
 \label{sec:rq3}
 % ============================================================
-\paragraph{Why this is the headline.} \todo{In the most forensically
-valuable setting — memory leaked / distilled / migrated — the
-action trajectory is gone. RQ3 tests whether \memmark{} can still
-attribute. This is the central claim of the paper.}
 
-\paragraph{Three regimes.} \todo{R1 = full external log (audit
-upper bound). R2 = partial log with keep ratio $r \in \{0.1, 0.3,
-0.5, 0.7, 0.9\}$. R3 = snapshot only, using the in-record reveal
-sidecar and the per-leaf inclusion proof of
-\S\ref{sec:method-audit}.}
 
-\input{tables/verification}
+%%comment: R1 和 R3 的 MEMMARK 行数值完全一样(都 1.00)。 R3 的 in-record sidecar(reveal\_t + 签名 anchor + 每片 leaf 的 inclusion proof)把外部 log 的内容复制进了 snapshot 里,所以正确 key + 无攻击 时 R1 和 R3 在"verifier 拿得到什么"这件事上等价 → 数字必然一样。 这一节的 headline 不是 "R3 比 R1 强",而是 "R3 在没有外部 log 的 情况下达到了 R1 的水平"。R3 这一行单独抽出来做一张柱状图,横轴四个 method (MEMMARK / signed-metadata / wrong-key / Action-layer),纵轴 bit recovery。再画一条水平虚线在 y = 1/K(随机基线),标注上去 —— 这样三个对照 一眼就能看到:watermark 的边际价值(vs 0)、PRF 真在锁(vs 0.15 低于随机)、trajectory-bound 在 snapshot-only 设定下直接失效(N/A)
+RQ3 tests the paper's central
+claim under the hardest and most practically relevant forensic regime.
+When memory is leaked, distilled, or migrated across systems, the
+visible action trajectory is typically unavailable. A watermark that
+requires the original trajectory is therefore unusable precisely in the
+setting where attribution matters most. The defining question for
+\memmark{} is whether attribution survives when verification has access
+only to the memory state and the cryptographic residue embedded with
+it.
 
-\paragraph{Headline result.} \todo{R3 \texttt{bit\_recovery} reaches
-$1.00$ with \texttt{anchor\_signature\_valid}; the
-\texttt{signed-metadata-only} ablation drops to $0$ (writer cannot
-be identified from signed metadata alone — exactly the failure
-mode this paper targets); the wrong-key control drops to $\approx
-0.15$, below the random-pick floor $1/K \approx 0.33$. R2 degrades
-smoothly with $r$ — see Figure~\ref{fig:r2-curve}. \memmark{} is
-the only point in the regime matrix that succeeds at R3.}
+We study three progressively weaker evidence regimes.
+\textbf{R1} assumes access to the full external audit log and serves as
+an upper bound. \textbf{R2} assumes that only a subset of the external
+log is retained, with keep ratio
+$r \in \{0.1, 0.3, 0.5, 0.7, 0.9\}$. \textbf{R3} removes the external log entirely and requires the verifier to
+operate only on the memory snapshot, the in-record reveal sidecar, and
+the anchored session header described in
+\S\ref{sec:method-audit}. Table~\ref{tab:verification} summarizes the
+regime hierarchy, and Figure~\ref{fig:r2-curve} shows the R2 sweep.
+
+\input{tables/verification} 
+
+The main result is that \memmark{} remains fully attributable in the
+snapshot-only setting. In R1, it recovers all 40 embedded bits with
+commitment pass rate 1.0. In R2, recovery degrades smoothly with the
+retained external-log fraction: bit recovery is 0.075, 0.200, 0.600,
+0.625, and 0.850 at keep ratios
+$r = 0.1, 0.3, 0.5, 0.7, 0.9$, while root matching and
+anchor-signature validation remain 1.0 throughout. In R3, where the
+verifier receives only the snapshot and the co-located sidecar,
+\memmark{} again recovers all 40/40 bits with valid root and signature
+checks. The carrier-level R3 recovery is likewise complete: 13/13
+\texttt{link\_target} bits, 16/16
+\texttt{semantic\_realization} bits, and 11/11
+\texttt{update\_target} bits are recovered.
+
+Two controls are critical for interpreting this result. First, the
+\texttt{signed-metadata-only} baseline retains valid anchors in every
+regime but recovers 0 bits throughout, showing that the attribution
+signal does not come from the sidecar metadata by itself. Second, the
+wrong-key R3 control recovers only 0.150 of payload bits and fails
+anchor-signature validation, whereas the correct-key R3 run recovers
+1.000. Together, these controls rule out a trivial verifier that
+merely accepts any well-formed reveal record. Successful R3
+attribution requires the hidden keyed state-evolution choices to match
+the verifier's secret.
+
 
 \input{figures/r2_curve}
-
-\paragraph{R3 = 1.00 sanity checks.} \todo{Three orthogonal
-controls rule out a trivial verifier returning constant 1.0:
-(a) wrong-key gives $0.15 \ll 1/K \approx 0.33$, proving the
-verifier depends on the secret key; (b) \texttt{signed-metadata-only}
-gives $0$ under the same R3 protocol, proving the bit-decoding
-step is actually executed; (c) the R2 sweep is strictly monotone
-in keep ratio, proving the verifier counts kept-leaf bits rather
-than short-circuiting.}
 
 % ============================================================
 \subsection{RQ4 — Robustness Against Memory-Specific Attacks}
 \label{sec:rq4}
 % ============================================================
-\todo{Nine attacks $\times$ three strengths $(0.1, 0.3, 0.5)$
-applied to the watermarked snapshot, then re-run R3 verification.
-The attacks split cleanly along the audit layer they trigger:
-content-tamper attacks fire \texttt{commitment\_fail\_rate};
-structural attacks fire \texttt{missing\_leaves\_rate}.}
+The R3 result is only useful if it survives the kinds of mutations that
+real memory systems undergo over time. We therefore stress-test the
+watermark under nine memory-specific attacks spanning both content
+rewrites and structural modifications, each applied at strengths
+$0.1$, $0.3$, and $0.5$. The goal is not merely to measure post-attack
+recovery, but to understand how recovery and tamper evidence trade off
+under different failure modes.
+
+Before attack, recovery is 1.0. Content-rewriting attacks show the
+expected recovery--detection tradeoff. For example,
+\texttt{manual\_edits} yields post-attack recovery of 0.900, 0.750,
+and 0.625 as attack strength increases, with corresponding tamper
+detection rates of 0.100, 0.300, and 0.499.
+\texttt{paraphrase\_rewrite} is more damaging, dropping recovery to
+0.825, 0.675, and 0.350. KG-style perturbations are similarly severe
+at high strength: both \texttt{edge\_relabel} and
+\texttt{subgraph\_reanchor} fall to 0.250 recovery at strength 0.5.
+By contrast, purely structural deletion-style operations are less
+harmful to the surviving watermark trace. \texttt{pruning} and
+\texttt{dedup} preserve 1.000 recovery across all tested strengths,
+while \texttt{poisoning} remains comparatively robust at 0.909, 0.816,
+and 0.741.
+
+This split is consistent with the audit design in
+\S\ref{sec:method-audit}. Structural attacks remove or reorganize
+leaves, but they do not necessarily invalidate the surviving
+per-record proofs, so recovery can remain smooth when enough valid
+trace survives. Content tampering, by contrast, directly perturbs the
+committed record bytes and therefore causes recovery to fall in tandem
+with commitment-level failures. Figure~\ref{fig:attack-signal-split}
+visualizes this separation between content-tamper and structural-tamper
+signals. The broader conclusion is that memory-lifecycle mutations do
+not create a single monolithic failure mode: some attacks erase signal,
+some expose themselves cryptographically, and many do both.
 
 \input{tables/robustness}
-
-\paragraph{Per-leaf inclusion proof keeps bit recovery smooth.}
-\todo{Method B (\S\ref{sec:method-audit}) stores each leaf's
-Merkle path at seal time, so structural removal (pruning, dedup,
-poisoning, compaction) does not invalidate surviving leaves.
-\texttt{bit\_recovery\_post} stays at $1.00$ under pruning at all
-three strengths and the removal itself is reported via
-\texttt{missing\_leaves\_rate}. Content-tamper attacks
-(manual\_edits, paraphrase\_rewrite, edge\_relabel,
-subgraph\_reanchor, supersession) show linear degradation in
-\texttt{bit\_recovery\_post} matched by linear
-\texttt{commitment\_fail\_rate}. See
-Figure~\ref{fig:attack-signal-split}.}
-
 \input{figures/attack_signals}
 
 % ============================================================
 \subsection{RQ5 — Memory Integrity}
 \label{sec:rq5}
 % ============================================================
-\todo{Sanity check that ingestion completed correctly. Report only
-metrics computable end-to-end on \locomo{}: overall snapshot size,
-per-$\carrier$ carrier-distribution, QA-time evidence-grounded
-retrieval recall, write\_failures. LoCoMo does not ship update /
-link / merge correctness labels, so we do not claim those.}
+Finally, we ask whether the watermark changes the memory system's
+internal behavior in undesirable ways even when end-task utility looks
+stable. This is a stricter integrity question: a method could preserve
+QA metrics yet still skew which writes are made, increase write-path
+instability, or degrade evidence-grounded retrieval.
+
+Table~\ref{tab:integrity} therefore reports only integrity signals that
+can be computed end-to-end on \locomo{}. All four \amem{} runs produce
+the same 419 records, with no detected duplicates or contradictions in
+the JSON snapshots. \memmark{} yields a carrier distribution of
+213:200:426 (update:link:semantic), compared with 122:298:421 for
+\texttt{no-watermark}. Importantly, this shift reflects where the
+keyed sampler found admissible decision points rather than a change in
+final snapshot size. Evidence-grounded retrieval recall is 0.585 for
+\memmark{}: below \texttt{no-watermark} (0.660), but above
+\texttt{signed-metadata-only} (0.552) and
+\texttt{random-replace} (0.563). Write failures remain identical to the
+unwatermarked run (4), indicating that the watermark layer does not
+introduce additional write-path instability.
+
+Taken together with RQ1, these signals suggest that \memmark{} alters
+where attribution is embedded without visibly corrupting the memory
+lifecycle itself. This distinction is important for long-term memory
+settings, where latent write-path damage can accumulate long before it
+appears in a single task metric.
 
 \input{tables/integrity}
 
-% ============================================================
-\subsection{RQ6 — Composability with Content Watermark (Appendix)}
-\label{sec:rq6}
-% ============================================================
-\todo{Brief note: three configurations (memory-only / content-only /
-both) on the R1 protocol of \S\ref{sec:rq3}. Detail in
-Appendix~\ref{app:composability}.}
+

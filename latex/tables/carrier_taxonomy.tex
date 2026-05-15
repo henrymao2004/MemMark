@@ -5,23 +5,23 @@
 \begin{table}[t]
 \centering
 \small
-\setlength{\tabcolsep}{4pt}
+\setlength{\tabcolsep}{0.2mm}
 \begin{tabular}{lll}
 \toprule
-Carrier $\carrier$ & \amem{} instance & \graphiti{} instance \\
+Carrier $\carrier$ & \amem{} & \graphiti{}  \\
 \midrule
 \texttt{update\_target}
-  & note id (which to update)
-  & fact-edge id / episode \\
+  & note id 
+  & fact-edge id \\
 \texttt{link\_target}
-  & keyword cluster / tag
+  & keyword cluster 
   & entity attach point \\
-\texttt{semantic\_realization}
-  & note description + tags
-  & edge label / fact phrasing \\
+\texttt{semantic\_realize.}
+  & note description 
+  & edge label  \\
 \bottomrule
 \end{tabular}
-\caption{\textbf{Three carriers, two backends}. Each $\carrier$ is a
+\caption{\textbf{Carriers Taxonomy}. Each $\carrier$ is a
 non-trivial-candidate-set evolve decision realized in
 backend-specific form; the watermark sampler reads only
 $(\candset, \probdist, \ctx)$ and is therefore backend-invariant.}

@@ -15,6 +15,9 @@
 % non-anonymous with page numbers.
 \usepackage[review]{acl}
 
+\newcommand{\decision}{{d}}
+
+
 \usepackage{times}
 \usepackage{latexsym}
 \usepackage[T1]{fontenc}
@@ -55,15 +58,22 @@
 \newtheorem{definition}{Definition}
 
 % Symbols used throughout (kept here so they're consistent).
-\newcommand{\carrier}{\tau}
-\newcommand{\decision}{D_t}
-\newcommand{\candset}{\mathcal{C}_t}
-\newcommand{\probdist}{p_t}
-\newcommand{\ctx}{\mathit{ctx}_t}
+
+\renewcommand{\decision}{D_t}
+
+
+
 \newcommand{\nonceT}{\mathit{nonce}_t}
-\newcommand{\commit}{\mathit{commit}_t}
-\newcommand{\reveal}{\mathit{reveal}_t}
-\newcommand{\header}{\mathit{header}_T}
+\newcommand{\carrier}{\mathrm{carrier}}
+\newcommand{\candset}{\mathcal{C}}
+\newcommand{\probdist}{\pi}
+\newcommand{\ctx}{\mathrm{ctx}}
+\newcommand{\commit}{\mathrm{cm}}
+\newcommand{\header}{\mathrm{hdr}}
+\newcommand{\reveal}{\mathrm{rev}}
+\usepackage[table]{xcolor}
+\definecolor{cbblue}{RGB}{198,219,239}   
+\newcommand{\best}[1]{\cellcolor{cbblue}#1}
 \newcommand{\bitsperdec}{\textsc{bpd}}
 
 % Backend name styling.

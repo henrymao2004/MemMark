@@ -1,83 +1,19 @@
 % ============================================================
-% Related Work — main paper keeps only the two CLOSEST lines:
+% Related Work — two closest lines:
 %   §2.1 Agent behavioral watermarking (mechanism-adjacent)
-%   §2.2 Long-term memory systems + provenance (problem-adjacent)
-% Everything else (RAG/corpus, LLM text, crypto primitives,
-% memory-ops-as-actions extras) → Appendix \ref{app:related-ext}.
+%   §2.2 Long-term memory systems (problem-adjacent) 
 % ============================================================
 \section{Related Work}
 \label{sec:related}
 
-\todo{One-sentence lede: \memmark{} sits at the intersection of two
-research lines — behavioral watermarking for LLM agents (which gives
-us the mechanism) and long-term memory systems with provenance
-(which gives us the threat model). Extended coverage of RAG /
-corpus-level watermarking, LLM text watermarking, and cryptographic
-provenance primitives is deferred to
-Appendix~\ref{app:related-ext}.}
-
 % ============================================================
-\subsection{Behavioral Watermarking for LLM Agents}
+\subsection{Behavioral Watermarking for Agents}
 \label{sec:related-behavioral}
 % ============================================================
-\todo{Cite \agentmark~\cite{agentmark}, Agent
-Guide~\cite{agentguide}, ActHook~\cite{acthook},
-AGENTWM~\cite{agentwm}. All four embed at the visible-action layer
-(planning, tool call, trajectory) and require the trajectory at
-verify time. \memmark{} embeds at the latent state-evolution
-decision layer, which survives when the trajectory is gone.}
-
-\todo{Relation to \agentmark: we reuse its binning sampler as a
-black-box component inside \S\ref{sec:method-sampler}; the
-contribution is not the sampler but (a) where to intercept inside a
-third-party memory SDK, (b) how to construct $(\candset, \probdist)$
-from open-vocabulary structured-JSON LLM output, and (c) how to
-compose audits across a cascade of intercepted calls per memory
-event.}
-
-\todo{Adjacent line — memory ops as actions
-(\textsc{Memory-as-Action}~\cite{mem-as-action},
-A-MAC~\cite{a-mac}). These optimize \emph{which} memory op to take;
-\memmark{} embeds attribution \emph{into} the op. Orthogonal but
-the closest neighbor on the "memory writes are first-class
-decisions" axis.}
+Behavioral watermarking for LLM agents embeds an owner-controlled signal into the agent's decision distribution so that ownership or origin can later be verified from the agent's behavior. AgentMark~\cite{agentmark}, ActHook~\cite{acthook}, and AGENTWM~\cite{agentwm} instantiate this idea at the visible-action layer, biasing planning choices, tool calls, or generated trajectories toward a keyed pattern that a verifier can detect by replaying or observing the action stream. \kgmark{}~\cite{kgmark} moves the carrier into structured state by watermarking dynamic knowledge graphs, which remains tied to strict knowledge graph structure. 
 
 % ============================================================
-\subsection{Long-Term Memory Systems and Provenance}
+\subsection{Long-Term Memory Systems for Agents}
 \label{sec:related-memory}
 % ============================================================
-\todo{Operating environment: \amem~\cite{amem},
-\graphiti~\cite{graphiti}, MemOS~\cite{memos},
-MemMachine~\cite{memmachine}. Two are the backends we wrap
-(\amem{} agentic notes, \graphiti{} temporal graph); the other two
-are MemMark-compatible via the §\ref{sec:method-formal} adapter.}
-
-\todo{Provenance-aware designs:
-\tiermem~\cite{tiermem} ships explicit provenance chains and
-immutable source anchoring; MemOS \texttt{MemCube} carries
-versioning / origin / lifecycle fields. Both are
-\emph{field-stamping} provenance — they encode "who wrote this"
-into metadata that the writer controls. \memmark{}'s contrast is
-exactly this: we treat the snapshot-holder as the writer (adversarial
-storage), so any field-based provenance is forgeable. \tiermem{} /
-MemOS therefore appear in \S\ref{sec:rq3} as the
-\texttt{signed-metadata-only} ablation point.}
-
-\todo{Threat-side motivation: A-MemGuard~\cite{amemguard} and
-MemoryGraft~\cite{memorygraft} catalog memory-poisoning attacks on
-LLM agents — these motivate our \S\ref{sec:rq4} attack model
-(\texttt{poisoning}, \texttt{manual\_edits}). The Mnemonic
-Sovereignty survey~\cite{mnemonicsovereignty} covers governance /
-access control / poisoning defense but explicitly does not cover
-behavioral watermarking on memory-evolve decisions, supporting our
-positioning.}
-
-\todo{Direct KG-backend baseline: \kgmark~\cite{kgmark} is dynamic
-knowledge-graph watermarking and is the closest single-point
-comparison on KG-structured memory. \S\ref{sec:rq1}–\S\ref{sec:rq4}
-compare \memmark{} vs \kgmark{} on the \graphiti{} backend.
-\kgmark{} is not applicable to \amem{} (notes network, not strict
-KG).}
-
-% ---------- positioning table (stays in main paper) ----------
-\input{tables/related_positioning}
+Long-term memory systems give LLM agents a persistent, evolving state that outlives a single context window. \amem{}, \graphiti{}, MemOS, Memory-R1, and MemMachine~\cite{amem,graphiti,memos,memmachine,yan2025memory} represent the current generation, spanning note-network, knowledge-graph, and structured-cube designs, and a subset of them, including \tiermem{} and MemOS~\cite{tiermem,memos}, further attach source anchoring, versioning, and lifecycle metadata to individual memory items as a form of stored provenance. Parallel work studies how these systems can be attacked: A-MemGuard and MemoryGraft~\cite{amemguard,memorygraft} demonstrate poisoning and stealth-edit attacks against long-term memory. 
