@@ -12,37 +12,12 @@ Category & Metric & Definition / Reporting Unit \\
 
 Utility
   & \locomo{} F1
-  & Set-based answer overlap used by \amem{} for paper-comparability:
-    precision and recall are computed over predicted versus gold answer
+  & precision and recall are computed over predicted versus gold answer
     items, and combined as their harmonic mean. \\
 
   & BLEU-1
   & Unigram precision between the generated answer and the reference
     answer, measuring lexical overlap at the token level. \\
-
-  & ROUGE-L
-  & Longest-common-subsequence recall-oriented overlap between the
-    generated answer and the reference answer, measuring whether the
-    generated answer preserves the reference content order. \\
-
-\midrule
-
-Watermark reliability
-  & Bit recovery rate
-  & Fraction of embedded watermark bits correctly recovered from the
-    decoded memory trace. \\
-
-  & Decode success rate
-  & Fraction of sessions in which the complete embedded watermark message
-    is decoded correctly. \\
-
-  & False-positive rate (FPR)
-  & Fraction of unwatermarked sessions incorrectly accepted as carrying a
-    valid watermark. \\
-
-  & Wrong-key acceptance rate
-  & Fraction of sessions decoded with an incorrect key that are incorrectly
-    accepted as valid. \\
 
 \midrule
 
@@ -78,7 +53,7 @@ Carrier-level analysis
 
 \midrule
 
-Tamper detection
+Robustness
   & Commitment verification fail rate
   & Fraction of tampered memory records whose commitment verification
     fails under the anchored commitment root. Reported per attack type

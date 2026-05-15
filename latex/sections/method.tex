@@ -265,9 +265,3 @@ Each record carries its Merkle inclusion path at seal time, so a surviving
 leaf can be checked directly against the anchored root without rebuilding
 the log. This prevents structural attacks from collapsing verification
 into an all-or-nothing rebuilt-root test.
-
-\paragraph{Verification dispatch.}
-Given a surviving leaf set, the verifier dispatches to the regime of
-Section~\ref{sec:problem-threat}: full-root reconstruction (R1), per-leaf
-inclusion checks against the anchored root (R2), or sidecar-against-snapshot
-validation (R3).

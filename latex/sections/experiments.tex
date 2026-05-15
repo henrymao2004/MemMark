@@ -17,22 +17,7 @@
 % ============================================================
 \section{Experiments}
 \label{sec:exp}
-Our experiments are organized around five research questions that
-together test whether \memmark{} delivers attribution without
-compromising the underlying memory system. \textbf{RQ1} asks whether
-watermarking preserves downstream task utility, since every attribution
-claim is meaningful only if memory still works. \textbf{RQ2} asks
-whether memory evolution carries enough entropy to embed a non-trivial
-payload in the first place. \textbf{RQ3} asks whether attribution survives in the snapshot-only setting where
-the external action log is unavailable: the regime that matters most
-when memory is leaked, distilled, or migrated. \textbf{RQ4} stress-tests
-the watermark against nine memory-lifecycle attacks spanning content
-rewrites and structural perturbations. \textbf{RQ5} asks whether
-watermarking introduces latent damage to the memory lifecycle itself,
-beyond what end-task metrics reveal. We defer a sixth question on
-composability with output-layer watermarks to
-Appendix~\ref{app:composability}. We begin by describing the
-experimental setup shared across all five questions.
+Our experiments evaluate whether \memmark{} enables robust attribution without degrading the memory system. We investigate if it preserves downstream utility (\textbf{RQ1}), contains sufficient entropy to embed payloads (\textbf{RQ2}), survives snapshot-only regimes like memory leaks (\textbf{RQ3}), resists nine distinct memory-lifecycle attacks (\textbf{RQ4}), and avoids latent damage to the memory lifecycle itself (\textbf{RQ5}). 
 
 % ============================================================
 \subsection{Setup}
@@ -59,7 +44,7 @@ the watermark over provenance metadata alone in the R3 setting.
 We also adopt \kgmark{} \cite{kgmark} which is the direct structured-memory baseline on \graphiti{}. 
 
 \paragraph{Metrics.}
-We evaluate along five axes, aligned with RQ1--RQ5; full definitions are in Appendix~\ref{app:metrics} (Table~\ref{tab:metric-defs}). For \emph{utility preservation} (RQ1) we report \locomo{} F1 and BLEU-1. For \emph{capacity} (RQ2) we report bits per memory decision, per session, per benchmark episode, per 100 conversation turns, and average bits per committed write. For \emph{in-record/snapshot-only verification} (RQ3) we report bit recovery rate, full-message decode success rate, FPR on unwatermarked sessions, and wrong-key acceptance rate across the R1/R2/R3 regime hierarchy. For \emph{robustness against nine memory-lifecycle attacks} (RQ4) we report pre- and post-attack bit recovery, commitment and Merkle-proof verification failure rates, and missing-leaves rate, all per attack type and strength. For \emph{memory integrity} (RQ5) we report snapshot size, carrier distribution, QA-time evidence-grounded retrieval recall, and write-failure rate. All reliability and capacity metrics are additionally broken down by carrier $\carrier \in \{\text{update\_target}, \text{link\_target}, \text{semantic\_realization}\}$.
+We evaluate along five axes, aligned with RQ1--RQ5; full definitions are in Appendix~\ref{app:metrics} (Table~\ref{tab:metric-defs}). For \emph{utility preservation} (RQ1) we report \locomo{} F1 and BLEU-1. For \emph{capacity} (RQ2) we report two views: opportunity-side capacity (average candidate set size and per-decision entropy $H(p_t)$) and realized capacity (total embedded payload and its per-carrier composition). For \emph{in-record/snapshot-only verification} (RQ3) we report bit recovery rate, full-message decode success rate, FPR on unwatermarked sessions, and wrong-key acceptance rate across the R1/R2/R3 regime hierarchy. For \emph{robustness against nine memory-lifecycle attacks} (RQ4) we report pre- and post-attack bit recovery, commitment and Merkle-proof verification failure rates, and missing-leaves rate, all per attack type and strength \footnote{Attack descriptions are in Appendix \ref{app:attack}}. For \emph{memory integrity} (RQ5) we report snapshot size, carrier distribution, QA-time evidence-grounded retrieval recall, and write-failure rate. All reliability and capacity metrics are additionally broken down by carrier $\carrier \in \{\text{update\_target}, \text{link\_target}, \text{semantic\_realization}\}$. %todo:attack description in appendix
 
 
 
@@ -80,26 +65,23 @@ controls. On \amem{}, it improves over \texttt{No-WM} for
 same range as the stronger controls for \textsc{DeepSeek-V4-Pro}. On
 \graphiti{}, the picture is more mixed: \memmark{} is not uniformly
 best, but it stays within the same overall operating regime as the
-comparison methods rather than failing sharply.
-
-Figure~\ref{fig:per-category} summarizes the overall F1 comparison
-across backend--model settings and shows that the resulting trade-off
-is modest relative to the spread among baselines. Overall, these
+comparison methods rather than failing sharply. Overall, these
 results suggest that memory-level attribution can be added without
-severe degradation in downstream QA quality, although the precise
-utility trade-off remains backend-dependent.
+severe degradation in downstream QA quality.
 
 \input{tables/main_results}
-\input{figures/per_category}
+% \input{figures/per_category} % todo:move to appendix
 
 % ============================================================
 \subsection{RQ2 — Capacity}
 \label{sec:rq2}
 % ============================================================
 
+After establishing utility preservation, we verify the host channel's watermark capacity, which is upper-bounded by the entropy of the LLM's candidate set ($K{=}4$). Figure~\ref{fig:entropy-hist} demonstrates robust per-decision entropy $H(p_t)$: near-deterministic decisions ($H{<}0.2$) are nonexistent, and mean entropy consistently exceeds one bit across all carriers (update $1.10$, link $1.14$, semantic $1.36$), operating well within the theoretical maximum of $\log_2 4 = 2$. This confirms the candidate distribution retains substantial selection freedom rather than collapsing onto a single option, yielding a viable, non-degenerate channel. We next confirm this nominal capacity translates to fully recoverable bits end-to-end. Figure~\ref{fig:carrier_bits} shows the complete $40$-bit payload is realized across all model--backend combinations on \locomo{}. Carrier distribution is governed by the backend's evolve pipeline rather than the specific LLM: \amem{} distributes bits evenly across carriers, whereas \graphiti{} concentrates the bulk of the payload in semantic realization due to its higher decision density. Ultimately, \memmark{}'s binning sampler efficiently consumes this available entropy to guarantee total payload recovery.
 
-\input{tables/capacity}
+
 \input{figures/entropy_histogram}
+\input{figures/carrier_bits}
 
 % ============================================================
 \subsection{RQ3 — Snapshot-Only / Partial-Log Verification}
