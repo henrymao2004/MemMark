@@ -1,0 +1,22 @@
+% ============================================================
+% Figure: per-carrier realized capacity (bits embedded) across
+% (model, backend) settings. Pairs with the entropy histogram:
+% entropy histogram shows the channel is non-degenerate, this
+% figure shows how that entropy is converted into payload bits.
+% ============================================================
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/carrier_bits.pdf}
+\caption{\textbf{Realized per-carrier capacity}. Bits embedded
+by carrier across three \locomo{} model--backend settings
+($n$ above each bar reports the number of watermarked decisions
+of that carrier). The total payload (40 bits) is split across the
+three carriers, with \texttt{semantic\_realization} carrying the
+majority on every setting and \texttt{update\_target} /
+\texttt{link\_target} contributing a smaller but non-zero share.
+Together with the entropy histogram in
+Figure~\ref{fig:entropy-hist}, this confirms that the non-degenerate
+candidate distributions translate into actually embedded payload
+across all three carriers.}
+\label{fig:carrier-bits}
+\end{figure}
